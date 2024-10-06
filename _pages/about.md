@@ -4,7 +4,7 @@ title: about
 permalink: /
 subtitle: >
   <h4>
-    Masters Student <br />
+    Graduate Student <br />
     Massachusetts Institute of Technology (MIT) <br />
     aryoung at mit dot edu
   </h4>
@@ -34,4 +34,4 @@ I'm a Mechanical Engineering Masters student in the
 [MIT Media Lab](https://www.media.mit.edu/) and am advised by [Ramesh Raskar](https://www.media.mit.edu/people/raskar/overview/). Before arriving at MIT, I received my Bachelor's Degree in Mechanical Engineering and Computer Sciences at the [University of Wisconsin - Madison](https://www.wisc.edu). under the direction of [Prof. Dan Negrut](https://sbel.wisc.edu/negrut-dan/). My
 research interests include robotics, simulation, and deep learning.
 
-In my free time, I enjoy being outdoors, especially doing exerting activities such as hiking and running. I enjoy traveling, preferably to places with mountains. While traveling, I've been trying to get into photography, but I'm still a novice. I also cook when I can, and eat Ben & Jerry's when I can't.
+<!-- In my free time, I enjoy being outdoors, especially doing exerting activities such as hiking and running. I enjoy traveling, preferably to places with mountains. While traveling, I've been trying to get into photography, but I'm still a novice. I also cook when I can, and eat Ben & Jerry's when I can't. -->
