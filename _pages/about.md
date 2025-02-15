@@ -23,6 +23,19 @@ timeline:
     title: University of Wisconsin - Madison
     description: I double majored in Mechanical Engineering and Computer Science. Following my freshman year, I joined the <a href="https://sbel.wisc.edu/">Simulation-Based Engineering Laboratory</a>, led by <a href="https://sbel.wisc.edu/negrut-dan">Prof. Dan Negrut</a>, where I helped develop the simulation engine <a href="https://www.projectchrono.org">Chrono</a>. I also served as a member and president of <a href="https://wa.wisc.edu">Wisconsin Autonomous</a>, a student organization that competed in the <a href="https://www.sae.org/attend/student-events/autodrive-challenge-series2">SAE AutoDrive Challenge</a>, a three-year competition to develop a self-driving car.
     image: uw.png
+  - timespan: 2022
+    title: Neuralink, Inc.
+    description: I interned at <a href="https://www.neuralink.com/">Neuralink</a>, working on their robot software team.
+    image: neuralink.png
+  - timespan: 2021
+    title: Tesla, Inc.
+    description: I interned at <a href="https://www.tesla.com/">Tesla</a>, working within the Autopilot Testing and Autopilot Simulation teams.
+    image: tesla.png
+  -
+    timespan: 2021
+    title: Jet Propulsion Laboratory (JPL)
+    description: I interned at JPL in the <a href="https://www-robotics.jpl.nasa.gov/how-we-do-it/facilities/the-darts-simulation-laboratory/">DARTS Lab</a>, where I built out a ray tracing-based rendering framework for simulating various sensors for future NASA missions.
+    image: jpl.png
 
 news: false # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
