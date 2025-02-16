@@ -1,6 +1,7 @@
 ---
 ---
 <!-- _layouts/bib.html -->
+      {%- unless entry.disable -%}
       <div class="row">
         {%- if site.enable_publication_thumbnails -%}
         <div class="col-sm-2 {% if entry.preview %}preview{% else %}abbr{% endif %}">
@@ -41,13 +42,15 @@
         {%- if site.max_author_limit and author_array_size > site.max_author_limit %}
           {% assign author_array_limit = site.max_author_limit %}
         {% endif %}
+        {% assign author_self_assigned = false %}
 
-        {%- for author in entry.author_array limit: author_array_limit -%}
+        {%- for author in entry.author_array limit: author_array_size -%}
           {%- assign author_is_self = false -%}
           {%- assign author_last_name = author.last | remove: "¶" | remove: "&" | remove: "*" | remove: "†" | remove: "^" -%}
           {%- if site.scholar.last_name contains author_last_name -%}
             {%- if site.scholar.first_name contains author.first -%}
               {%- assign author_is_self = true -%}
+              {%- assign author_self_assigned = true -%}
             {%- endif -%}
           {%- endif -%}
           {%- assign coauthor_url = nil -%}
@@ -71,6 +74,16 @@
               <a href="{{coauthor_url}}">{{author.first}} {{author.last}}</a>
             {%- else -%}
               {{author.first}} {{author.last}}
+            {%- endif -%}
+          {%- endif -%}
+
+          <!-- If we have been assigned and we're over limit, break -->
+          {%- if forloop.index >= author_array_limit -%}
+            {%- if author_self_assigned -%}
+              {%- if author_is_self -%}
+                {%- assign author_array_limit = author_array_limit | plus: 1 -%}
+              {%- endif -%}
+              {%- break -%}
             {%- endif -%}
           {%- endif -%}
         {%- endfor -%}
@@ -164,12 +177,6 @@
             <a href="{{ entry.supp | prepend: '/assets/pdf/' | relative_url }}" class="btn btn-sm z-depth-0" role="button">Supp</a>
             {%- endif %}
           {%- endif %}
-          {%- if entry.blog %}
-            <a href="{{ entry.blog }}" class="btn btn-sm z-depth-0" role="button">Blog</a>
-          {%- endif %}
-          {%- if entry.code %}
-            <a href="{{ entry.code }}" class="btn btn-sm z-depth-0" role="button">Code</a>
-          {%- endif %}
           {%- if entry.poster %}
             {% if entry.poster contains '://' -%}
             <a href="{{ entry.poster }}" class="btn btn-sm z-depth-0" role="button">Poster</a>
@@ -186,6 +193,15 @@
           {%- endif %}
           {%- if entry.website %}
             <a href="{{ entry.website }}" class="btn btn-sm z-depth-0" role="button">Website</a>
+          {%- endif %}
+          {%- if entry.url %}
+            <a href="{{ entry.url }}" class="btn btn-sm z-depth-0" role="button">URL</a>
+          {%- endif %}
+          {%- if entry.code %}
+            <a href="{{ entry.code }}" class="btn btn-sm z-depth-0" role="button">Code</a>
+          {%- endif %}
+          {%- if entry.blog %}
+            <a href="{{ entry.blog }}" class="btn btn-sm z-depth-0" role="button">Blog</a>
           {%- endif %}
           </div>
           {% if site.enable_publication_badges %}
@@ -238,3 +254,4 @@
           {%- endif %}
         </div>
       </div>
+      {%- endunless -%}
