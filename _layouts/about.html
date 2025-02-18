@@ -43,7 +43,9 @@ layout: default
           {%- if entry.subtitle -%}
           <h5>{{ entry.subtitle }}</h5>
           {%- endif -%}
+          {%- if entry.description -%}
           <p>{{ entry.description }}</p>
+          {%- endif -%}
         </div>
         {%- assign entry_image_path = entry.image | prepend: 'assets/img/' -%}
         <div class="image col-sm-1">

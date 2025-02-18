@@ -29,19 +29,19 @@ timeline:
     timespan: 2022
     title: Neuralink
     subtitle: Robot Software Intern
-    description: I interned at <a href="https://www.neuralink.com/">Neuralink</a>, working on their robot software team.
+    # description: I interned at <a href="https://www.neuralink.com/">Neuralink</a>, working on their robot software team.
     image: neuralink.png
   - 
     timespan: 2021
     title: Tesla
-    subtitle: Autopilot Testing Engineer Intern
-    description: I interned at <a href="https://www.tesla.com/">Tesla</a>, working within the Autopilot Testing and Autopilot Simulation teams.
+    subtitle: Autopilot Engineer Intern
+    # description: I interned at <a href="https://www.tesla.com/">Tesla</a>, working within the Autopilot Testing and Autopilot Simulation teams.
     image: tesla.png
   -
     timespan: 2021
     title: NASA Jet Propulsion Laboratory (JPL)
     subtitle: Software Engineering Intern
-    description: I interned at JPL in the <a href="https://www-robotics.jpl.nasa.gov/how-we-do-it/facilities/the-darts-simulation-laboratory/">DARTS Lab</a>, where I built out a ray tracing-based rendering framework for simulating various sensors for future NASA missions.
+    # description: I interned at JPL in the <a href="https://www-robotics.jpl.nasa.gov/how-we-do-it/facilities/the-darts-simulation-laboratory/">DARTS Lab</a>, where I built out a ray tracing-based rendering framework for simulating various sensors for future NASA missions.
     image: jpl.png
 
 news: false # includes a list of news items
@@ -50,7 +50,6 @@ latest_posts: true  # includes a list of the newest posts
 social: true  # includes social icons at the bottom of the page
 ---
 
-I'm a Mechanical Engineering (Course 2) graduate student in the
-[MIT Media Lab](https://www.media.mit.edu/) and am advised by [Ramesh Raskar](https://www.media.mit.edu/people/raskar/overview/). Before arriving at MIT, I received my Bachelor's Degree in Mechanical Engineering and Computer Sciences at the [University of Wisconsin - Madison](https://www.wisc.edu). under the direction of [Prof. Dan Negrut](https://sbel.wisc.edu/negrut-dan/). My research interests include robotics, simulation, and deep learning.
+I'm a Mechanical Engineering (Course 2) graduate research assistant in the [MIT Media Lab](https://www.media.mit.edu/) and am advised by [Ramesh Raskar](https://www.media.mit.edu/people/raskar/overview/). Before arriving at MIT, I received my Bachelor's Degree in Mechanical Engineering and Computer Sciences at the [University of Wisconsin - Madison](https://www.wisc.edu) under the direction of [Prof. Dan Negrut](https://sbel.wisc.edu/negrut-dan/). My research interests include robotics, simulation, and deep learning. I'm particularly interested in the co-design of intelligent software and intelligent hardware to improve upon human-engineered systems.
 
 <!-- In my free time, I enjoy being outdoors, especially doing exerting activities such as hiking and running. I enjoy traveling, preferably to places with mountains. While traveling, I've been trying to get into photography, but I'm still a novice. I also cook when I can, and eat Ben & Jerry's when I can't. -->
