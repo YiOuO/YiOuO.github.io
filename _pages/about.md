@@ -17,7 +17,7 @@ timeline:
     timespan: 2023 - Now
     title: Massachusetts Institute of Technology
     subtitle: Graduate Student
-    description: I've joined the <a href="https://www.media.mit.edu/camera-culture/overview/">Camera Culture</a> group in the <a href="https://www.media.mit.edu/">MIT Media Lab</a> advised by <a href="https://www.media.mit.edu/people/raskar/overview">Ramesh Raskar</a>. I got my Master's in February 2025.
+    description: I've joined the <a href="https://www.media.mit.edu/camera-culture/overview/">Camera Culture</a> group in the <a href="https://www.media.mit.edu/">MIT Media Lab</a> advised by <a href="https://www.media.mit.edu/people/raskar/overview">Ramesh Raskar</a>. I received my master's in February 2025.
     image: mit.png
   -
     timespan: 2018 - 2022
