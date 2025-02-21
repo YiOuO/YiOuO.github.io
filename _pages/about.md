@@ -1,6 +1,6 @@
 ---
 permalink: /
-title: "👏Hello there, I'm YiZhan!"
+title: "👏Hello there, I'm Yi Zhan!"
 author_profile: true
 redirect_from: 
   - /about/
