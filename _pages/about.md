@@ -7,14 +7,59 @@ redirect_from:
   - /about.html
 ---
 
-![](/images/about/wave.png){: .align-right width="250px"}
+![](/images/about/wave.png){: .align-right width="300px"}
 👨‍💻I'm a final year Ph.D. student at ZJU China, under the supervision of Prof. [Min Luo](https://person.zju.edu.cn/minluo) from Zhejiang University and Prof. [Abbas Khayyer](https://kdb.iimc.kyoto-u.ac.jp/profile/en.c9f8dc637d08ec64.html) from Kyoto University.
 
-🎈My research interests are in Smoothed Particle Hydrodynamics **(SPH)**, Wave-structure Interaction **(WSI)** and High Performance Computing **(HPC)** !
+🎈My research interests are in Smoothed Particle Hydrodynamics **(SPH)**, High Performance Computing **(HPC)** and Reinforcment Learning in Computational Fluid Dynamics **(RLCFD)**.
 
-📚 I’m currently working towards my Thesis in the field of **High performance SPH model in WSI simulations**.
+📚 I’m currently working towards my Thesis in the field of **High performance SPH model in Wave-structure Interaction simulations**.
+
+Here are some animations showing the research results:
 
 
+<!-- <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+  <div style="width: 48%; margin-bottom: 10px;">
+    <video width="100%" controls>
+      <source src="/images/about/wavetank.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div style="width: 48%; margin-bottom: 10px;">
+    <video width="100%" controls>
+      <source src="/images/about/windturbine.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
+<video controls src="/images/about/twist.mp4" title="Title"></video> -->
+
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+  <!-- 窄视频 1 -->
+  <div style="width: 48%; margin-bottom: 10px;">
+    <video width="90%" controls>
+      <source src="/images/about/1.mp4" type="video/mp4">
+    </video>
+  </div>
+  <!-- 窄视频 2 -->
+  <div style="width: 48%; margin-bottom: 10px;">
+    <video width="100%" controls>
+      <source src="/images/about/2.mp4" type="video/mp4">
+    </video>
+  </div>
+  
+  <!-- 宽视频 1 -->
+  <div style="width: 100%; margin-bottom: 10px;">
+    <video width="100%" controls>
+      <source src="/images/about/3.mp4" type="video/mp4">
+    </video>
+  </div>
+  
+  <!-- 宽视频 2 -->
+  <div style="width: 100%; margin-bottom: 10px;">
+    <video width="100%" controls>
+      <source src="/images/about/4.mp4" type="video/mp4">
+    </video>
+  </div>
+</div>
 
 <!-- A data-driven personal website
 ======
