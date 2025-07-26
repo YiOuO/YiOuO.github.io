@@ -74,6 +74,7 @@ author:
   xing             : # Username
   youtube          : # Username
   zhihu            : # Username
+  bilibili         : "https://space.bilibili.com/317722513"
 
 # Publication Category - The following the list of publication categories and their headings
 publication_category:
