@@ -1,6 +1,6 @@
 ---
 permalink: /
-title: "👏Hello there, I'm Yi Zhan!"
+title: "Hello there, I'm Yi Zhan!"
 author_profile: true
 redirect_from: 
   - /about/
@@ -8,7 +8,7 @@ redirect_from:
 ---
 
 ![](/images/about/wave.png){: .align-right width="300px"}
-👨‍💻I'm a final year Ph.D. student at ZJU China, under the supervision of Prof. [Min Luo](https://person.zju.edu.cn/minluo) from Zhejiang University and Prof. [Abbas Khayyer](https://kdb.iimc.kyoto-u.ac.jp/profile/en.c9f8dc637d08ec64.html) from Kyoto University.
+I'm a final year Ph.D. student at ZJU China, under the supervision of Prof. [Min Luo](https://person.zju.edu.cn/minluo) from Zhejiang University and Prof. [Abbas Khayyer](https://kdb.iimc.kyoto-u.ac.jp/profile/en.c9f8dc637d08ec64.html) from Kyoto University.
 
 🎈My research interests are in 
 - Smoothed Particle Hydrodynamics **(SPH)** 
