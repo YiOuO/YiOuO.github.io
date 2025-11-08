@@ -5,7 +5,7 @@ category: manuscripts
 permalink: /publication/DualSPHysics+Wave
 excerpt: 'DualSPHysics+ & Numerical wave tank'
 date: 2025-01-01
-# venue: 'Ocean Engineering'
+venue: 'Ocean Engineering'
 # slidesurl: 'http://academicpages.github.io/files/slides3.pdf'
 # paperurl: 'http://academicpages.github.io/files/paper3.pdf'
 citation: 'Yi Zhan, Min Luo, and Abbas Khayyer.  

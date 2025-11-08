@@ -11,5 +11,8 @@ location: "Zhuhai, China"
 [Download Presentation (PDF)](/files/SPHERIC2024_Yi.pdf)
 <!-- **Oral presentation**  -->
 <!-- ![](/images/talks/spheric_Barcelona.jpg) -->
-<img src="/images/talks/SPHERIC2024_1.png" width="700" height="250" alt="">
-<img src="/images/talks/spheric_zhuhai.jpg" width="600" height="200" alt="">
+<p align="center">
+  <img src="/images/talks/SPHERIC2024_1.png" width="700" height="250" alt="">
+  <br>
+  <img src="/images/talks/spheric_zhuhai.jpg" width="600" height="200" alt="">
+</p>
