@@ -3,9 +3,9 @@
 # -----------------------------------------------------------------------------
 
 title: blank # the website title (if blank, full name will be used instead)
-first_name: Aaron
-last_name: Young
-email: aryoung@mit.edu
+first_name: Yi
+last_name: Zhan
+email: yizhan@zju.edu.cn
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
   My personal website.
 footer_text: null
@@ -14,7 +14,7 @@ keywords: jekyll, jekyll-theme, academic-website, portfolio-website  # add your 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: 🤖 # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
 
-url: https://AaronYoung5.github.io # the base hostname & protocol for your site
+url: https://yiouo.github.io # the base hostname & protocol for your site
 baseurl: / # the subpath of your site, e.g. /blog/
 last_updated: false # set to true if you want to display last updated in the footer
 impressum_path:  # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
@@ -63,13 +63,13 @@ og_image: # The site-wide (default for all links) Open Graph preview image
 # Social integration
 # -----------------------------------------------------------------------------
 
-github_username: AaronYoung5
+github_username: YiOuO
 gitlab_username: # your GitLab user name
 x_username: # your X handle
 mastodon_username: # your mastodon instance+username in the format instance.tld/@username
-linkedin_username: aaronryoung5
+linkedin_username: yi-zhan-926bba364
 telegram_username: # your Telegram user name
-scholar_userid: sr-CgZEAAAAJ
+scholar_userid: 3JbqsrAAAAAJ&hl=en # your Google Scholar user ID
 semanticscholar_id: # your Semantic Scholar ID
 whatsapp_number: # your WhatsApp number (full phone number in international format. Omit any zeroes, brackets, or dashes when adding the phone number in international format.)
 orcid_id: # your ORCID ID
@@ -265,8 +265,8 @@ display_categories: [] # these categories will be displayed on the front page of
 
 scholar:
 
-  last_name: [Young]
-  first_name: [Aaron]
+  last_name: [Zhan]
+  first_name: [Yi]
 
   style: apa
   locale: en
