@@ -55,5 +55,3 @@ My research interests lie at the intersection of computational fluid dynamics, h
 - **Smoothed Particle Hydrodynamics (SPH)** methods for fluid-structure interaction problems
 - **High Performance Computing (HPC)** with GPU parallelization for large-scale simulations
 - **Reinforcement Learning in Computational Fluid Dynamics (RLCFD)** for intelligent flow control
-
-<!-- In my free time, I enjoy being outdoors, especially doing exerting activities such as hiking and running. I enjoy traveling, preferably to places with mountains. While traveling, I've been trying to get into photography, but I'm still a novice. I also cook when I can, and eat Ben & Jerry's when I can't. -->
