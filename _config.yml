@@ -65,7 +65,7 @@ og_image: # The site-wide (default for all links) Open Graph preview image
 
 github_username: YiOuO
 gitlab_username: # your GitLab user name
-x_username: # your X handle
+x_username: YiZhan74058215
 mastodon_username: # your mastodon instance+username in the format instance.tld/@username
 linkedin_username: yi-zhan-926bba364
 telegram_username: # your Telegram user name
@@ -105,8 +105,8 @@ contact_note: null
 # Analytics and search engine verification
 # -----------------------------------------------------------------------------
 
-google_analytics:  G-G66XXTNG67
-cronitor_analytics:  # cronitor RUM analytics site ID (format: XXXXXXXXX)
+# google_analytics:  G-G66XXTNG67
+# cronitor_analytics:  # cronitor RUM analytics site ID (format: XXXXXXXXX)
 
 google_site_verification:  # your google-site-verification ID (Google Search Console)
 bing_site_verification:  # out your bing-site-verification ID (Bing Webmaster)
