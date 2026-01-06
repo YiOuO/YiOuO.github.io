@@ -1,6 +1,6 @@
 ---
 layout: about
-title: about
+title: About
 permalink: /
 subtitle: >
   <h4>
@@ -16,7 +16,7 @@ timeline:
     timespan: 2025 - 2026
     title: University of Vigo, Spain
     subtitle: Visiting Scholar
-    description: I'm visiting the <a href="https://ephyslab.uvigo.es/">EphysLab</a> at the University of Vigo in Spain, working with <a href="https://scholar.google.com/citations?user=L4dD9AIAAAAJ&hl=en&oi=sra">Prof. Alejandro J. C. Crespo</a>  on the development of AI-driven modules for <a href="https://dual.sphysics.org/"> DualSPHysics </a>.
+    description: I'm visiting the <a href="https://ephyslab.uvigo.es/">EphysLab</a> at the University of Vigo in Spain, working with <a href="https://scholar.google.com/citations?user=L4dD9AIAAAAJ&hl=en&oi=sra">Prof. Alejandro J. C. Crespo</a>  and <a href="https://scholar.google.com/citations?user=o1UtOLoAAAAJ&hl=en&oi=sra">Dr. Iván Martínez Estévez</a> on the development of AI-driven modules for <a href="https://dual.sphysics.org/"> DualSPHysics </a>.
     image: ephyslab.png
   -
     timespan: 2020 - 2026
