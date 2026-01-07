@@ -651,6 +651,7 @@ footer.sticky-bottom {
     margin-top: 2rem;
     margin-bottom: -2rem;
     text-align: right;
+    padding-right: 1rem; /* 为年份标签增加右侧内边距 */
   }
 
   ol.bibliography {
@@ -660,6 +661,8 @@ footer.sticky-bottom {
 
     li {
       margin-bottom: 1rem;
+      position: relative; /* 添加相对定位 */
+      padding-right: 80px; /* 为年份标签预留空间 */
 
       .preview {
         width: 100%;
@@ -695,6 +698,7 @@ footer.sticky-bottom {
 
       .title {
         font-weight: bolder;
+        padding-right: 10px; /* 标题右侧增加内边距 */
       }
 
       .author {
