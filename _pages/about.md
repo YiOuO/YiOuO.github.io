@@ -14,9 +14,9 @@ profile:
 timeline:
   - 
     timespan: 2025 - 2026
-    title: University of Vigo, Spain
+    title: EPhysLab, Spain
     subtitle: Visiting Scholar
-    description: I'm visiting the <a href="https://ephyslab.uvigo.es/">EphysLab</a> at the University of Vigo in Spain, working with <a href="https://scholar.google.com/citations?user=L4dD9AIAAAAJ&hl=en&oi=sra">Prof. Alejandro J. C. Crespo</a>  and <a href="https://scholar.google.com/citations?user=o1UtOLoAAAAJ&hl=en&oi=sra">Dr. Iván Martínez Estévez</a> on the development of AI-driven modules for <a href="https://dual.sphysics.org/"> DualSPHysics </a>.
+    description: I'm visiting the <a href="https://ephyslab.uvigo.es/">EPhysLab</a> at the University of Vigo in Spain, working with <a href="https://scholar.google.com/citations?user=L4dD9AIAAAAJ&hl=en&oi=sra">Prof. Alejandro J. C. Crespo</a>  and <a href="https://scholar.google.com/citations?user=o1UtOLoAAAAJ&hl=en&oi=sra">Dr. Iván Martínez Estévez</a> on the development of AI-driven modules for <a href="https://dual.sphysics.org/"> DualSPHysics </a>.
     image: ephyslab.png
   -
     timespan: 2020 - 2026
@@ -49,7 +49,7 @@ latest_posts: true  # includes a list of the newest posts
 social: true  # includes social icons at the bottom of the page
 ---
 
-I'm a final year PhD student in Marine Technology and Engineering at [Zhejiang University](https://www.zju.edu.cn/english/) under the supervision of [Prof. Min Luo](https://person.zju.edu.cn/minluo). I'm currently a visiting scholar at the [University of Vigo](https://www.uvigo.gal/en) in Spain, working with [Prof. Alejandro J. C. Crespo](https://scholar.google.com/citations?user=L4dD9AIAAAAJ&hl=en&oi=sra).
+I'm a final year PhD student in Marine Technology and Engineering at [Zhejiang University](https://www.zju.edu.cn/english/) under the supervision of [Prof. Min Luo](https://person.zju.edu.cn/minluo) and [Prof. Abbas Khayyer](https://scholar.google.com/citations?user=n2y6r9cAAAAJ&hl=en&oi=ao). I'm currently a visiting scholar at the [EPhysLab](https://ephyslab.uvigo.es/) in Spain, under the supervision of [Prof. Alejandro J. C. Crespo](https://scholar.google.com/citations?user=L4dD9AIAAAAJ&hl=en&oi=sra).
 
 My research interests lie at the intersection of computational fluid dynamics, high performance computing, and artificial intelligence. Specifically, I focus on:
 - **Smoothed Particle Hydrodynamics (SPH)** methods for fluid-structure interaction problems
