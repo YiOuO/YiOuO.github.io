@@ -1,0 +1,825 @@
+<span data-en="html" data-i18n="1" data-zh="html">html</span>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title><span data-en="Smoothed Particle Hydrodynamics (SPH)" data-i18n="1" data-zh="Smoothed Particle Hydrodynamics (SPH)">Smoothed Particle Hydrodynamics (SPH)</span></title>
+<script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$','$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+<script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+    :root{
+      --bg:#050914; --panel:#0b1222; --panel2:#0e1a31; --text:#e8f1ff; --muted:#a8bad6;
+      --cyan:#20e3ff; --blue:#6aa7ff; --violet:#9b6cff; --green:#51ffc2; --orange:#ffbd65;
+      --line:rgba(126,196,255,.26); --glass:rgba(12,26,48,.72); --shadow:0 18px 60px rgba(0,0,0,.38);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; color:var(--text); font-family:"Inter","Segoe UI",Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(32,227,255,.18), transparent 28%),
+        radial-gradient(circle at 82% 18%, rgba(155,108,255,.18), transparent 32%),
+        linear-gradient(180deg,#030712 0%, #061126 48%, #040813 100%);
+      overflow-x:hidden;
+    }
+    body:before{
+      content:""; position:fixed; inset:0; pointer-events:none; opacity:.25; z-index:-1;
+      background-image:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px, transparent 1px);
+      background-size:42px 42px; mask-image:radial-gradient(circle at 50% 10%, #000 0%, transparent 72%);
+    }
+    .progress{position:fixed; top:0; left:0; height:4px; width:0%; z-index:50; background:linear-gradient(90deg,var(--cyan),var(--violet),var(--green)); box-shadow:0 0 18px var(--cyan)}
+    .nav{position:fixed; right:22px; top:50%; transform:translateY(-50%); z-index:40; display:flex; flex-direction:column; gap:10px}
+    .nav a{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.26);border:1px solid rgba(255,255,255,.3)}
+    .nav a:hover{background:var(--cyan); box-shadow:0 0 14px var(--cyan)}
+    .slide{min-height:100vh; padding:72px 8vw; display:flex; align-items:center; position:relative}
+    .wrap{width:min(1220px,100%); margin:0 auto; position:relative; z-index:2}
+    .kicker{letter-spacing:.18em; text-transform:uppercase; color:var(--green); font-size:13px; font-weight:800; margin-bottom:16px}
+    h1{font-size:clamp(42px,6.6vw,82px); line-height:1.03; margin:0 0 24px; letter-spacing:-.04em}
+    h2{font-size:clamp(29px,3.8vw,50px); line-height:1.14; margin:0 0 24px; letter-spacing:-.03em}
+    h3{font-size:22px; margin:0 0 14px; color:#ffffff}
+    p{font-size:18px; line-height:1.72; color:var(--muted); margin:0 0 17px}
+    .lead{font-size:23px; color:#cfe2ff; max-width:920px}
+    .accent{background:linear-gradient(90deg,var(--cyan),#fff,var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .grid{display:grid; grid-template-columns:1.07fr .93fr; gap:30px; align-items:center}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start}
+    .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+    .compareBox{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px}
+    .pros,.cons{position:relative; overflow:hidden}
+    .pros:before,.cons:before{content:""; position:absolute; inset:0; opacity:.10; pointer-events:none}
+    .pros:before{background:radial-gradient(circle at 18% 15%, var(--green), transparent 42%)}
+    .cons:before{background:radial-gradient(circle at 18% 15%, var(--orange), transparent 42%)}
+    .pros h3{color:#dfffee}.cons h3{color:#ffe6bd}
+    .card{background:linear-gradient(180deg, rgba(14,28,52,.86), rgba(7,15,30,.76)); border:1px solid var(--line); border-radius:24px; padding:25px; box-shadow:var(--shadow); backdrop-filter: blur(12px)}
+    .formula{font-size:21px; padding:22px 24px; border-radius:20px; background:rgba(0,0,0,.22); border:1px solid rgba(32,227,255,.22); margin:17px 0; overflow-x:auto}
+    .formula.small{font-size:18px; padding:17px 18px}
+    .tag{display:inline-flex; align-items:center; gap:8px; font-size:14px; color:#dff9ff; border:1px solid rgba(32,227,255,.32); background:rgba(32,227,255,.08); padding:7px 11px; border-radius:999px; margin:6px 8px 6px 0}
+    .tag:before{content:""; width:7px;height:7px;border-radius:50%;background:var(--cyan); box-shadow:0 0 12px var(--cyan)}
+    .note{border-left:3px solid var(--cyan); padding-left:18px; color:#d7e9ff}
+    .warn{border-left:3px solid var(--orange); padding:13px 16px; border-radius:14px; background:rgba(255,189,101,.08); color:#ffe0b0; margin:16px 0}
+    .eqnum{float:right; color:rgba(255,255,255,.42); font-size:14px; padding-top:7px}
+    .flow{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:20px}
+    .node{flex:1; text-align:center; padding:17px 12px; border-radius:18px; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.12); min-height:82px; display:flex; align-items:center; justify-content:center; color:#dcecff; font-weight:750}
+    .arrow{color:var(--cyan); font-size:30px; text-shadow:0 0 12px var(--cyan)}
+    .heroCanvas,.plot{width:100%; display:block; border-radius:26px; background:radial-gradient(circle at 50% 45%, rgba(32,227,255,.10), transparent 42%), rgba(3,9,21,.72); border:1px solid var(--line); box-shadow:var(--shadow)}
+     .heroCanvas{aspect-ratio:1.35}.plot{height:330px}
+    .heroLayout{display:flex; flex-direction:column; align-items:center; gap:22px; text-align:center}
+    .heroTitleBlock{width:min(1180px,100%); margin:0 auto}
+    .heroTitleBlock h1{font-size:clamp(27px,4.15vw,61px); margin-bottom:16px; white-space:nowrap; word-break:normal}
+    .heroTitleBlock .lead{max-width:1060px; margin-left:auto; margin-right:auto}
+    .heroTags{display:flex; flex-wrap:wrap; justify-content:center; gap:4px 8px; margin-top:8px}
+    .heroCanvasWide{width:min(1080px,100%); aspect-ratio:2.45; max-height:430px}
+    .heroQuote{
+      position:absolute; left:8vw; right:8vw; bottom:64px; text-align:center;
+      /* font-family:"Noto Serif SC","Source Han Serif CN","STSong","SimSun",serif; */
+      font-family: "Microsoft YaHei", "微软雅黑", "PingFang SC", "Helvetica Neue", sans-serif;
+      font-size:clamp(17px,1.7vw,26px); letter-spacing:.22em;
+      font-weight:400;
+      background: linear-gradient(90deg,
+        rgba(232,241,255,0) 0%,
+        rgba(232,241,255,.55) 8%,
+        rgba(232,241,255,.88) 18%,
+        #ffffff 28%,
+        rgba(32,227,255,1) 38%,
+        #ffffff 48%,
+        rgba(232,241,255,.88) 58%,
+        rgba(155,108,255,.72) 68%,
+        rgba(232,241,255,.55) 78%,
+        rgba(232,241,255,0) 100%
+      );
+      background-size: 280% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: lightFlow 8s ease-in-out infinite;
+      filter: drop-shadow(0 0 14px rgba(32,227,255,.22));
+    }
+    @keyframes lightFlow {
+      0%   { background-position: 120% 0 }
+      100% { background-position: -60% 0 }
+    }
+    .mini{font-size:15.5px; color:#91a8c5; line-height:1.6}
+    .bigNumber{font-size:52px; font-weight:850; color:var(--cyan); line-height:1; text-shadow:0 0 26px rgba(32,227,255,.35)}
+    .sectionIndex{position:absolute; right:8vw; top:38px; color:rgba(255,255,255,.32); font-size:15px}
+    .footer{position:absolute; left:50%; transform:translateX(-50%); bottom:24px; width:min(980px,84vw); text-align:center; color:rgba(210,230,255,.50); font-size:13px; letter-spacing:.08em}
+    .glow{position:absolute; width:420px; height:420px; border-radius:50%; filter:blur(60px); opacity:.18; background:var(--cyan); right:-160px; bottom:10%; z-index:0}
+    .twoLine{height:1px; background:linear-gradient(90deg,transparent,var(--cyan),transparent); margin:22px 0; opacity:.55}
+    .bullet{margin:10px 0 0; padding-left:0; list-style:none}
+    .bullet li{position:relative; padding-left:22px; margin:10px 0; color:var(--muted); font-size:17px; line-height:1.58}
+    .bullet li:before{content:""; position:absolute; left:0; top:.66em; width:8px; height:8px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan)}
+    .control{display:flex; align-items:center; gap:12px; margin:8px 0 8px; flex-wrap:wrap}
+    input[type="range"]{accent-color:var(--violet)}
+    select{background:#071329; color:var(--text); border:1px solid rgba(126,196,255,.35); border-radius:10px; padding:7px 10px}
+
+    .particlePanel{position:relative; overflow:hidden}
+    .particleViz{width:100%; height:330px; display:block; border-radius:22px; background:radial-gradient(circle at 50% 50%, rgba(32,227,255,.08), transparent 45%), rgba(2,8,18,.58); border:1px solid rgba(126,196,255,.23)}
+    .legendRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; align-items:center}
+    .legendDot{display:inline-flex; align-items:center; gap:6px; color:#a8bad6; font-size:13px}
+    .legendDot:before{content:""; width:9px; height:9px; border-radius:50%; background:var(--cyan); box-shadow:0 0 10px var(--cyan)}
+    .legendDot.center:before{background:var(--orange); box-shadow:0 0 10px var(--orange)}
+    .legendDot.neighbor:before{background:var(--green); box-shadow:0 0 10px var(--green)}
+    .legendDot.outside:before{background:#6aa7ff; opacity:.65; box-shadow:none}
+
+    .accumStats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:10px 0 12px}
+    .statBox{background:rgba(0,0,0,.20); border:1px solid rgba(126,196,255,.22); border-radius:14px; padding:10px 12px; min-height:58px}
+    .statBox b{display:block; font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:#91a8c5; margin-bottom:5px}
+    .statBox span{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color:#e8f1ff; font-size:15px}
+    .btn{border:1px solid rgba(32,227,255,.35); background:rgba(32,227,255,.08); color:#dff9ff; border-radius:999px; padding:7px 12px; cursor:pointer; font-weight:700}
+    .btn:hover{background:rgba(32,227,255,.18); box-shadow:0 0 12px rgba(32,227,255,.25)}
+    .accumFormula{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color:#cfe2ff; background:rgba(0,0,0,.22); border:1px solid rgba(81,255,194,.20); border-radius:14px; padding:10px 12px; margin-top:10px; font-size:13.5px; line-height:1.55; min-height:44px}
+
+    @media(max-width:980px){.grid,.grid2,.grid3,.compareBox{grid-template-columns:1fr}.nav{display:none}.slide{padding:62px 5vw}.flow{flex-direction:column}.arrow{transform:rotate(90deg)}.heroTitleBlock h1{white-space:normal}.heroCanvasWide{aspect-ratio:1.45}.heroQuote{bottom:70px}.footer{bottom:22px}}
+    @media print{.slide{min-height:auto; page-break-after:always}.nav,.progress{display:none} body{background:#07101e}}
+  
+    .langToggle{position:fixed; top:18px; right:22px; z-index:80; display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid rgba(126,196,255,.32); background:rgba(5,14,30,.68); backdrop-filter:blur(12px); border-radius:999px; box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .langLabel{font-size:12px; color:rgba(210,230,255,.72); letter-spacing:.05em; margin:0 2px 0 4px}
+    .langBtn{border:1px solid rgba(32,227,255,.28); background:rgba(32,227,255,.06); color:#dff9ff; border-radius:999px; padding:6px 10px; cursor:pointer; font-weight:800; font-size:12px; line-height:1}
+    .langBtn.active{background:linear-gradient(90deg,rgba(32,227,255,.35),rgba(155,108,255,.30)); border-color:rgba(255,255,255,.45); box-shadow:0 0 14px rgba(32,227,255,.22)}
+    body.lang-zh{font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC","Source Han Sans CN","Inter","Segoe UI",Arial,sans-serif;}
+    body.lang-zh h1, body.lang-zh h2{letter-spacing:-.02em}
+    body.lang-zh p{font-size:17px; line-height:1.78}
+    body.lang-zh .lead{font-size:21px}
+    body.lang-zh .heroTitleBlock h1{font-size:clamp(25px,3.85vw,58px)}
+    body.lang-zh .tag{font-size:13px}
+    body.lang-zh .node{font-size:15px}
+    body.lang-zh .bullet li{font-size:16px; line-height:1.65}
+    body.lang-zh .formula{font-size:19px}
+    body.lang-zh .formula.small{font-size:16px}
+    body.lang-zh .heroQuote{font-size:clamp(15px,1.55vw,22px); letter-spacing:.08em; bottom:58px;}
+    @media(max-width:980px){.langToggle{top:12px;right:12px}.slide{padding-top:72px}}
+</style>
+</head>
+<body>
+<div aria-label="Language switcher" class="langToggle"><span class="langLabel" data-en="Language" data-i18n="1" data-zh="语言">Language</span><button class="langBtn" data-lang-btn="zh" id="langZh" type="button">中文</button><button class="langBtn" data-lang-btn="en" id="langEn" type="button">EN</button></div><div class="progress" id="progress"></div>
+<nav class="nav">
+<a href="#s1"></a><a href="#s2"></a><a href="#s3"></a><a href="#s4"></a><a href="#s5"></a><a href="#s6"></a><a href="#s7"></a><a href="#s8"></a><a href="#s9"></a><a href="#s10"></a><a href="#s11"></a><a href="#s12"></a>
+</nav>
+<section class="slide" id="s1">
+<div class="glow"></div><div class="sectionIndex"><span data-en="01 / 12" data-i18n="1" data-zh="01 / 12">01 / 12</span></div>
+<div class="wrap heroLayout">
+<div class="heroTitleBlock">
+<div class="kicker"><span data-en="SPH Basic Concept -- designed by Yi Zhan" data-i18n="1" data-zh="SPH 基本概念 -- designed by Yi Zhan">SPH Basic Concept -- designed by Yi Zhan</span></div>
+<h1><span class="accent"><span data-en="Smoothed Particle Hydrodynamics" data-i18n="1" data-zh="Smoothed Particle Hydrodynamics">Smoothed Particle Hydrodynamics</span></span><span data-en="(SPH)" data-i18n="1" data-zh="(SPH)">(SPH)</span></h1>
+<p class="lead"><span data-en="Smoothed Particle Hydrodynamics represents continuum fields by particles and evaluates field variables, gradients, and divergence operators through local kernel-weighted interactions." data-i18n="1" data-zh="Smoothed Particle Hydrodynamics 通过粒子表征连续介质场，并通过局部核函数加权相互作用计算场变量、梯度与散度算子。">Smoothed Particle Hydrodynamics represents continuum fields by particles and evaluates field variables, gradients, and divergence operators through local kernel-weighted interactions.</span></p>
+<div class="heroTags">
+<span class="tag"><span data-en="Lagrangian mesh-free method" data-i18n="1" data-zh="Lagrangian 无网格方法">Lagrangian mesh-free method</span></span>
+<span class="tag"><span data-en="Kernel approximation" data-i18n="1" data-zh="核近似">Kernel approximation</span></span>
+<span class="tag"><span data-en="Particle approximation" data-i18n="1" data-zh="粒子近似">Particle approximation</span></span>
+<span class="tag"><span data-en="Navier–Stokes equations" data-i18n="1" data-zh="Navier–Stokes 方程">Navier–Stokes equations</span></span>
+</div>
+</div>
+<canvas class="heroCanvas heroCanvasWide" id="particleCanvas"></canvas>
+</div>
+<div class="heroQuote"><span data-en="“在不可逆的熵增时空里，每一对粒子相遇都是物理学奇迹”" data-i18n="1" data-zh="In a universe of irreversible entropy, the meeting of any two particles is a physical miracle">“在不可逆的熵增时空里，每一对粒子相遇都是物理学奇迹”</span></div>
+<div class="footer"><span data-en="Dirac delta → kernel approximation → particle discretization → SPH operators → Navier–Stokes equations → advantages and limitations" data-i18n="1" data-zh="Dirac delta → 核近似 → 粒子离散 → SPH 算子 → Navier–Stokes 方程 → 优势与局限">Dirac delta → kernel approximation → particle discretization → SPH operators → Navier–Stokes equations → advantages and limitations</span></div>
+</section>
+<section class="slide" id="s2">
+<div class="sectionIndex"><span data-en="02 / 12" data-i18n="1" data-zh="02 / 12">02 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Starting Point" data-i18n="1" data-zh="起点">Starting Point</span></div>
+<h2><span data-en="The original Dirac delta idea" data-i18n="1" data-zh="原始的 Dirac delta 思想">The original Dirac delta idea</span></h2>
+<p><span data-en="Consider any continuum field variable $\phi(\mathbf{x})$, such as density, pressure, or one velocity component. The value at a target position $\mathbf{x}$ can be written as a weighted integral over the whole domain:" data-i18n="1" data-zh="考虑任意连续介质场变量 $\phi(\mathbf{x})$，例如密度、压力或某一速度分量。目标位置 $\mathbf{x}$ 处的取值可以写成整个计算域上的加权积分：">Consider any continuum field variable $\phi(\mathbf{x})$, such as density, pressure, or one velocity component. The value at a target position $\mathbf{x}$ can be written as a weighted integral over the whole domain:</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(1)" data-i18n="1" data-zh="(1)">(1)</span></span><span data-en="$$\phi(\mathbf{x})=\int_{\Omega}\phi(\mathbf{x}')\,\delta(\mathbf{x}-\mathbf{x}')\,\mathrm{d}\mathbf{x}'$$" data-i18n="1" data-zh="$$\phi(\mathbf{x})=\int_{\Omega}\phi(\mathbf{x}')\,\delta(\mathbf{x}-\mathbf{x}')\,\mathrm{d}\mathbf{x}'$$">$$\phi(\mathbf{x})=\int_{\Omega}\phi(\mathbf{x}')\,\delta(\mathbf{x}-\mathbf{x}')\,\mathrm{d}\mathbf{x}'$$</span></div>
+<p><span data-en="Here, $\delta(\mathbf{x}-\mathbf{x}')$ acts as an ideal weighting function: it assigns zero weight to all positions except $\mathbf{x}'=\mathbf{x}$, where the contribution is concentrated." data-i18n="1" data-zh="这里，$\delta(\mathbf{x}-\mathbf{x}')$ 可视为理想加权函数：除 $\mathbf{x}'=\mathbf{x}$ 外，其他位置权重均为零，贡献集中在目标点。">Here, $\delta(\mathbf{x}-\mathbf{x}')$ acts as an ideal weighting function: it assigns zero weight to all positions except $\mathbf{x}'=\mathbf{x}$, where the contribution is concentrated.</span></p>
+<div class="formula small"><span class="eqnum"><span data-en="Def." data-i18n="1" data-zh="定义">Def.</span></span><span data-en="$$\delta(\mathbf{x}-\mathbf{x}')=0\quad(\mathbf{x}'\ne\mathbf{x}),\qquad \int_{\Omega}\delta(\mathbf{x}-\mathbf{x}')\,\mathrm{d}\mathbf{x}'=1$$" data-i18n="1" data-zh="$$\delta(\mathbf{x}-\mathbf{x}')=0\quad(\mathbf{x}'\ne\mathbf{x}),\qquad \int_{\Omega}\delta(\mathbf{x}-\mathbf{x}')\,\mathrm{d}\mathbf{x}'=1$$">$$\delta(\mathbf{x}-\mathbf{x}')=0\quad(\mathbf{x}'\ne\mathbf{x}),\qquad \int_{\Omega}\delta(\mathbf{x}-\mathbf{x}')\,\mathrm{d}\mathbf{x}'=1$$</span></div>
+<p class="note"><span data-en="This is the key idea: a field value can be represented through a weighted contribution of surrounding field information. The delta function is the limiting case of a perfect selector." data-i18n="1" data-zh="核心思想在于：一个场变量值可以由周围场信息的加权贡献来表征。delta 函数正是“完美筛选器”的极限情形。">This is the key idea: a field value can be represented through a weighted contribution of surrounding field information. The delta function is the limiting case of a perfect selector.</span></p>
+</div>
+<div class="card">
+<h3><span data-en="Ideal point selection" data-i18n="1" data-zh="理想点选择">Ideal point selection</span></h3>
+<canvas class="plot" id="deltaPlot" style="height:310px"></canvas>
+<p class="mini" style="margin-top:12px"><span data-en="The delta function is not a regular finite-valued function. It is a generalized function with unit integral and infinitely concentrated support at the target point." data-i18n="1" data-zh="delta 函数不是普通的有限值函数，而是广义函数：其积分为 1，支撑域无限集中于目标点。">The delta function is not a regular finite-valued function. It is a generalized function with unit integral and infinitely concentrated support at the target point.</span></p>
+</div>
+</div>
+</section>
+<section class="slide" id="s3">
+<div class="sectionIndex"><span data-en="03 / 12" data-i18n="1" data-zh="03 / 12">03 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Why Replace δ?" data-i18n="1" data-zh="为什么替换 δ？">Why Replace δ?</span></div>
+<h2><span data-en="Why the delta function is not directly usable" data-i18n="1" data-zh="为什么 delta 函数不能直接用于数值计算">Why the delta function is not directly usable</span></h2>
+<p><span data-en="The exact identity is mathematically elegant, but it is not directly suitable for numerical continuum mechanics." data-i18n="1" data-zh="这个精确恒等式在数学上很优雅，但并不适合直接用于数值连续介质力学。">The exact identity is mathematically elegant, but it is not directly suitable for numerical continuum mechanics.</span></p>
+<ul class="bullet">
+<li><b><span data-en="Singular amplitude:" data-i18n="1" data-zh="奇异幅值：">Singular amplitude:</span></b><span data-en="the delta function has an infinite peak at the target point." data-i18n="1" data-zh="delta 函数在目标点具有无限高的峰值。">the delta function has an infinite peak at the target point.</span></li>
+<li><b><span data-en="No finite neighborhood:" data-i18n="1" data-zh="没有有限邻域：">No finite neighborhood:</span></b><span data-en="it does not provide a practical way to use neighboring particles." data-i18n="1" data-zh="它无法提供一种实际可用的邻近粒子信息利用方式。">it does not provide a practical way to use neighboring particles.</span></li>
+<li><b><span data-en="Discrete sensitivity:" data-i18n="1" data-zh="离散敏感性：">Discrete sensitivity:</span></b><span data-en="if no particle is located exactly at the target point, the point selection becomes numerically fragile." data-i18n="1" data-zh="如果没有粒子恰好位于目标点，点选择在数值上会非常脆弱。">if no particle is located exactly at the target point, the point selection becomes numerically fragile.</span></li>
+<li><b><span data-en="Differential operators:" data-i18n="1" data-zh="微分算子：">Differential operators:</span></b><span data-en="fluid mechanics requires gradients and divergence terms, which need smooth and stable approximations." data-i18n="1" data-zh="流体力学需要梯度与散度项，因此需要光滑且稳定的近似。">fluid mechanics requires gradients and divergence terms, which need smooth and stable approximations.</span></li>
+</ul>
+<div class="warn"><span data-en="SPH therefore replaces the ideal selector $\delta$ with a smooth, normalized, finite-support kernel $W$." data-i18n="1" data-zh="因此，SPH 用光滑、归一化、有限支撑域的核函数 $W$ 替代理想筛选器 $\delta$。">SPH therefore replaces the ideal selector $\delta$ with a smooth, normalized, finite-support kernel $W$.</span></div>
+</div>
+<div class="card">
+<h3><span data-en="From ideal selection to local averaging" data-i18n="1" data-zh="从理想选择到局部平均">From ideal selection to local averaging</span></h3>
+<div class="flow" style="flex-direction:column;align-items:stretch">
+<div class="node"><span data-en="Dirac delta $\delta$" data-i18n="1" data-zh="Dirac delta $\delta$">Dirac delta $\delta$</span><br/><span data-en="ideal but singular" data-i18n="1" data-zh="理想但奇异">ideal but singular</span></div>
+<div class="arrow" style="transform:rotate(90deg);align-self:center"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Kernel $W(\mathbf{r},h)$" data-i18n="1" data-zh="核函数 $W(\mathbf{r},h)$">Kernel $W(\mathbf{r},h)$</span><br/><span data-en="smooth, non-negative, finite support" data-i18n="1" data-zh="光滑、非负、有限支撑">smooth, non-negative, finite support</span></div>
+<div class="arrow" style="transform:rotate(90deg);align-self:center"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Particle summation" data-i18n="1" data-zh="粒子求和">Particle summation</span><br/><span data-en="practical SPH approximation" data-i18n="1" data-zh="实际可用的 SPH 近似">practical SPH approximation</span></div>
+</div>
+<div class="formula small"><span data-en="$$\delta(\mathbf{x}-\mathbf{x}')\;\longrightarrow\;W(\mathbf{x}-\mathbf{x}',h)$$" data-i18n="1" data-zh="$$\delta(\mathbf{x}-\mathbf{x}')\;\longrightarrow\;W(\mathbf{x}-\mathbf{x}',h)$$">$$\delta(\mathbf{x}-\mathbf{x}')\;\longrightarrow\;W(\mathbf{x}-\mathbf{x}',h)$$</span></div>
+</div>
+</div>
+</section>
+<section class="slide" id="s4">
+<div class="sectionIndex"><span data-en="04 / 12" data-i18n="1" data-zh="04 / 12">04 / 12</span></div>
+<div class="wrap">
+<div class="kicker"><span data-en="Kernel Approximation" data-i18n="1" data-zh="核近似">Kernel Approximation</span></div>
+<h2><span data-en="Kernel approximation: a smooth weighting function" data-i18n="1" data-zh="核近似：一个光滑的加权函数">Kernel approximation: a smooth weighting function</span></h2>
+<div class="grid">
+<div>
+<p><span data-en="Replacing the delta function by a kernel gives the SPH kernel approximation:" data-i18n="1" data-zh="用核函数替代 delta 函数，即可得到 SPH 核近似：">Replacing the delta function by a kernel gives the SPH kernel approximation:</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(2)" data-i18n="1" data-zh="(2)">(2)</span></span><span data-en="$$\langle \phi(\mathbf{x})\rangle=\int_{\Omega}\phi(\mathbf{x}')\,W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'$$" data-i18n="1" data-zh="$$\langle \phi(\mathbf{x})\rangle=\int_{\Omega}\phi(\mathbf{x}')\,W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'$$">$$\langle \phi(\mathbf{x})\rangle=\int_{\Omega}\phi(\mathbf{x}')\,W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'$$</span></div>
+<p><span data-en="The smoothing length $h$ controls the size of the local support domain. A larger $h$ uses more neighboring information and gives a smoother estimate; a smaller $h$ gives a sharper, more local estimate." data-i18n="1" data-zh="光滑长度 $h$ 控制局部支撑域大小。较大的 $h$ 会引入更多邻域信息并得到更平滑的估计；较小的 $h$ 则得到更尖锐、更局部的估计。">The smoothing length $h$ controls the size of the local support domain. A larger $h$ uses more neighboring information and gives a smoother estimate; a smaller $h$ gives a sharper, more local estimate.</span></p>
+<div class="formula small"><span class="eqnum"><span data-en="Kernel conditions" data-i18n="1" data-zh="核函数条件">Kernel conditions</span></span><span data-en="$$W\ge 0,\qquad \int_{\Omega}W(\mathbf{r},h)\,\mathrm{d}\mathbf{r}=1,\qquad W(\mathbf{r},h)=0\ \text{for}\ |\mathbf{r}|&gt;\kappa h$$" data-i18n="1" data-zh="$$W\ge 0,\qquad \int_{\Omega}W(\mathbf{r},h)\,\mathrm{d}\mathbf{r}=1,\qquad W(\mathbf{r},h)=0\ \text{当}\ |\mathbf{r}|&gt;\kappa h$$">$$W\ge 0,\qquad \int_{\Omega}W(\mathbf{r},h)\,\mathrm{d}\mathbf{r}=1,\qquad W(\mathbf{r},h)=0\ \text{for}\ |\mathbf{r}|&gt;\kappa h$$</span></div>
+<p class="note"><span data-en="The 3D sketch shows the kernel as a positive weight surface. The peak is located at the target particle, and the value decays outward." data-i18n="1" data-zh="三维示意图将核函数表示为正的权重曲面。峰值位于目标粒子处，并向外逐渐衰减。">The 3D sketch shows the kernel as a positive weight surface. The peak is located at the target particle, and the value decays outward.</span></p>
+</div>
+<div class="card">
+<h3><span data-en="Interactive 3D kernel surface" data-i18n="1" data-zh="交互式三维核函数曲面">Interactive 3D kernel surface</span></h3>
+<div class="control">
+<label class="mini"><span data-en="Kernel" data-i18n="1" data-zh="核函数">Kernel</span></label>
+<select id="kernelType"><option value="wendland"><span data-en="Wendland C²" data-i18n="1" data-zh="Wendland C²">Wendland C²</span></option><option value="cubic"><span data-en="Cubic spline" data-i18n="1" data-zh="三次样条">Cubic spline</span></option><option value="gaussian"><span data-en="Gaussian reference" data-i18n="1" data-zh="Gaussian 参考">Gaussian reference</span></option></select>
+<label class="mini"><span data-en="$h$" data-i18n="1" data-zh="$h$">$h$</span></label>
+<input id="hSlider" max="90" min="25" type="range" value="52"/>
+<span class="mini" id="hVal" style="color:var(--violet);font-family:monospace"><span data-en="0.52" data-i18n="1" data-zh="0.52">0.52</span></span>
+</div>
+<canvas class="plot" id="kernel3D" style="height:350px;cursor:grab"></canvas>
+<p class="mini" style="margin-top:9px"><span data-en="Drag the plot to rotate the view. The kernel value is always non-negative and rises upward from the support plane." data-i18n="1" data-zh="拖动画布可旋转视角。核函数值始终非负，并从支撑平面向上凸起。">Drag the plot to rotate the view. The kernel value is always non-negative and rises upward from the support plane.</span></p>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="s5">
+<div class="sectionIndex"><span data-en="05 / 12" data-i18n="1" data-zh="05 / 12">05 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Particle Approximation" data-i18n="1" data-zh="粒子近似">Particle Approximation</span></div>
+<h2><span data-en="Kernel-weighted particle summation" data-i18n="1" data-zh="核函数加权粒子求和">Kernel-weighted particle summation</span></h2>
+<p><span data-en="After the kernel integral is discretized, the field value at the target particle $a$ is obtained by adding the weighted contribution of each neighboring particle $b$." data-i18n="1" data-zh="将核积分离散后，目标粒子 $a$ 处的场变量值由各邻近粒子 $b$ 的加权贡献累加得到。">After the kernel integral is discretized, the field value at the target particle $a$ is obtained by adding the weighted contribution of each neighboring particle $b$.</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(3)" data-i18n="1" data-zh="(3)">(3)</span></span><span data-en="$$\int_{\Omega}\phi(\mathbf{x}')W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'\approx \sum_b \phi_b W_{ab}\Delta V_b$$" data-i18n="1" data-zh="$$\int_{\Omega}\phi(\mathbf{x}')W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'\approx \sum_b \phi_b W_{ab}\Delta V_b$$">$$\int_{\Omega}\phi(\mathbf{x}')W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'\approx \sum_b \phi_b W_{ab}\Delta V_b$$</span></div>
+<div class="formula"><span class="eqnum"><span data-en="(4)" data-i18n="1" data-zh="(4)">(4)</span></span><span data-en="$$\boxed{\langle \phi_a\rangle=\sum_b \underbrace{\frac{m_b}{\rho_b}\phi_b W_{ab}}_{\text{contribution of particle }b}}$$" data-i18n="1" data-zh="$$\boxed{\langle \phi_a\rangle=\sum_b \underbrace{\frac{m_b}{\rho_b}\phi_b W_{ab}}_{\text{粒子 }b\text{ 的贡献}}}$$">$$\boxed{\langle \phi_a\rangle=\sum_b \underbrace{\frac{m_b}{\rho_b}\phi_b W_{ab}}_{\text{contribution of particle }b}}$$</span></div>
+<p class="note"><span data-en="The interaction panel explicitly shows the accumulation process: select a particle $b_k$, compute its contribution, and add it to the partial sum." data-i18n="1" data-zh="右侧交互面板展示了累加过程：选中某个粒子 $b_k$，计算其贡献，并加入当前部分和。">The interaction panel explicitly shows the accumulation process: select a particle $b_k$, compute its contribution, and add it to the partial sum.</span></p>
+</div>
+<div class="card particlePanel">
+<h3><span data-en="Step-by-step kernel summation" data-i18n="1" data-zh="逐步核函数求和">Step-by-step kernel summation</span></h3>
+<div class="control">
+<button class="btn" id="kernelPrev"><span data-en="Prev" data-i18n="1" data-zh="上一个">Prev</span></button>
+<button class="btn" id="kernelNext"><span data-en="Next particle" data-i18n="1" data-zh="下一个粒子">Next particle</span></button>
+<button class="btn" id="kernelPlay"><span data-en="Play" data-i18n="1" data-zh="播放">Play</span></button>
+<button class="btn" id="kernelReset"><span data-en="Reset" data-i18n="1" data-zh="重置">Reset</span></button>
+<label class="mini"><span data-en="$h$" data-i18n="1" data-zh="$h$">$h$</span></label>
+<input id="kernelH" max="155" min="70" type="range" value="118"/>
+</div>
+<canvas class="particleViz" id="kernelAccum" style="height:260px"></canvas>
+<div class="accumStats">
+<div class="statBox"><b><span data-en="current particle" data-i18n="1" data-zh="当前粒子">current particle</span></b><span id="kernelStep"><span data-en="b = --" data-i18n="1" data-zh="b = --">b = --</span></span></div>
+<div class="statBox"><b><span data-en="current term" data-i18n="1" data-zh="当前项">current term</span></b><span id="kernelTerm"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+<div class="statBox"><b><span data-en="partial sum" data-i18n="1" data-zh="部分和">partial sum</span></b><span id="kernelTotal"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+</div>
+<div class="accumFormula" id="kernelFormula"><span data-en="Contribution: $(m_b/\rho_b)\phi_b W_{ab}$" data-i18n="1" data-zh="贡献项：$(m_b/\rho_b)\phi_b W_{ab}$">Contribution: $(m_b/\rho_b)\phi_b W_{ab}$</span></div>
+<p class="mini" style="margin-top:8px"><span data-en="Blue particles are outside the support; green particles have already been added; orange is the current particle being accumulated." data-i18n="1" data-zh="蓝色粒子位于支撑域外；绿色粒子已经被累加；橙色粒子是当前正在累加的粒子。">Blue particles are outside the support; green particles have already been added; orange is the current particle being accumulated.</span></p>
+</div>
+</div>
+</section>
+<section class="slide" id="s6">
+<div class="sectionIndex"><span data-en="06 / 12" data-i18n="1" data-zh="06 / 12">06 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Gradient Approximation" data-i18n="1" data-zh="梯度近似">Gradient Approximation</span></div>
+<h2><span data-en="Gradient as accumulated pairwise contributions" data-i18n="1" data-zh="梯度：由成对粒子贡献累加得到">Gradient as accumulated pairwise contributions</span></h2>
+<p><span data-en="For a scalar field such as pressure or density, the SPH gradient is obtained by summing the contribution from each neighboring particle." data-i18n="1" data-zh="对于压力或密度等标量场，SPH 梯度可通过累加每个邻近粒子的贡献得到。">For a scalar field such as pressure or density, the SPH gradient is obtained by summing the contribution from each neighboring particle.</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(5)" data-i18n="1" data-zh="(5)">(5)</span></span><span data-en="$$\nabla \phi(\mathbf{x})\approx \int_{\Omega}\phi(\mathbf{x}')\nabla W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'$$" data-i18n="1" data-zh="$$\nabla \phi(\mathbf{x})\approx \int_{\Omega}\phi(\mathbf{x}')\nabla W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'$$">$$\nabla \phi(\mathbf{x})\approx \int_{\Omega}\phi(\mathbf{x}')\nabla W(\mathbf{x}-\mathbf{x}',h)\,\mathrm{d}\mathbf{x}'$$</span></div>
+<div class="formula"><span class="eqnum"><span data-en="(6)" data-i18n="1" data-zh="(6)">(6)</span></span><span data-en="$$\boxed{\langle \nabla \phi_a\rangle=\sum_b \underbrace{\frac{m_b}{\rho_b}(\phi_b-\phi_a)\nabla_a W_{ab}}_{\text{vector contribution of particle }b}}$$" data-i18n="1" data-zh="$$\boxed{\langle \nabla \phi_a\rangle=\sum_b \underbrace{\frac{m_b}{\rho_b}(\phi_b-\phi_a)\nabla_a W_{ab}}_{\text{粒子 }b\text{ 的向量贡献}}}$$">$$\boxed{\langle \nabla \phi_a\rangle=\sum_b \underbrace{\frac{m_b}{\rho_b}(\phi_b-\phi_a)\nabla_a W_{ab}}_{\text{vector contribution of particle }b}}$$</span></div>
+<p class="note"><span data-en="Each particle contributes a small vector. The final gradient is the vector sum of these local contributions." data-i18n="1" data-zh="每个粒子贡献一个小向量。最终梯度就是这些局部贡献的向量和。">Each particle contributes a small vector. The final gradient is the vector sum of these local contributions.</span></p>
+</div>
+<div class="card particlePanel">
+<h3><span data-en="Step-by-step gradient accumulation" data-i18n="1" data-zh="逐步梯度累加">Step-by-step gradient accumulation</span></h3>
+<div class="control">
+<button class="btn" id="gradPrev"><span data-en="Prev" data-i18n="1" data-zh="上一个">Prev</span></button>
+<button class="btn" id="gradNext"><span data-en="Next particle" data-i18n="1" data-zh="下一个粒子">Next particle</span></button>
+<button class="btn" id="gradPlay"><span data-en="Play" data-i18n="1" data-zh="播放">Play</span></button>
+<button class="btn" id="gradReset"><span data-en="Reset" data-i18n="1" data-zh="重置">Reset</span></button>
+<label class="mini"><span data-en="field slope" data-i18n="1" data-zh="场变量斜率">field slope</span></label>
+<input id="gradSlope" max="80" min="-80" type="range" value="45"/>
+</div>
+<canvas class="particleViz" id="gradParticles" style="height:260px"></canvas>
+<div class="accumStats">
+<div class="statBox"><b><span data-en="current particle" data-i18n="1" data-zh="当前粒子">current particle</span></b><span id="gradStep"><span data-en="b = --" data-i18n="1" data-zh="b = --">b = --</span></span></div>
+<div class="statBox"><b><span data-en="current vector" data-i18n="1" data-zh="当前向量">current vector</span></b><span id="gradTerm"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+<div class="statBox"><b><span data-en="partial gradient" data-i18n="1" data-zh="部分梯度">partial gradient</span></b><span id="gradTotal"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+</div>
+<div class="accumFormula" id="gradFormula"><span data-en="Contribution: $(m_b/\rho_b)(\phi_b-\phi_a)\nabla_a W_{ab}$" data-i18n="1" data-zh="贡献项：$(m_b/\rho_b)(\phi_b-\phi_a)\nabla_a W_{ab}$">Contribution: $(m_b/\rho_b)(\phi_b-\phi_a)\nabla_a W_{ab}$</span></div>
+<p class="mini" style="margin-top:8px"><span data-en="The orange arrow is the current vector term; the green arrow is the accumulated gradient at particle $a$." data-i18n="1" data-zh="橙色箭头为当前向量项；绿色箭头为粒子 $a$ 处已累加的梯度。">The orange arrow is the current vector term; the green arrow is the accumulated gradient at particle $a$.</span></p>
+</div>
+</div>
+</section>
+<section class="slide" id="s7">
+<div class="sectionIndex"><span data-en="07 / 12" data-i18n="1" data-zh="07 / 12">07 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Divergence Approximation" data-i18n="1" data-zh="散度近似">Divergence Approximation</span></div>
+<h2><span data-en="Divergence as accumulated velocity projection" data-i18n="1" data-zh="散度：由速度投影累加得到">Divergence as accumulated velocity projection</span></h2>
+<p><span data-en="For velocity divergence, each neighboring particle contributes a scalar obtained by projecting the velocity difference onto the kernel-gradient direction." data-i18n="1" data-zh="对于速度散度，每个邻近粒子的贡献是一个标量，由速度差在核梯度方向上的投影得到。">For velocity divergence, each neighboring particle contributes a scalar obtained by projecting the velocity difference onto the kernel-gradient direction.</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(7)" data-i18n="1" data-zh="(7)">(7)</span></span><span data-en="$$\left\langle \nabla\!\cdot\!\mathbf{v}_a \right\rangle = \sum_b C_b, \qquad C_b = \frac{m_b}{\rho_b}\left(\mathbf{v}_b-\mathbf{v}_a\right)\!\cdot\!\nabla_a W_{ab}$$" data-i18n="1" data-zh="$$\left\langle \nabla\!\cdot\!\mathbf{v}_a \right\rangle = \sum_b C_b, \qquad C_b = \frac{m_b}{\rho_b}\left(\mathbf{v}_b-\mathbf{v}_a\right)\!\cdot\!\nabla_a W_{ab}$$">$$\left\langle \nabla\!\cdot\!\mathbf{v}_a \right\rangle = \sum_b C_b, \qquad C_b = \frac{m_b}{\rho_b}\left(\mathbf{v}_b-\mathbf{v}_a\right)\!\cdot\!\nabla_a W_{ab}$$</span></div>
+<p class="note"><span data-en="If the partial sum is positive, the local particle configuration behaves like expansion; if negative, it behaves like compression." data-i18n="1" data-zh="如果部分和为正，局部粒子构型表现为膨胀；如果为负，则表现为压缩。">If the partial sum is positive, the local particle configuration behaves like expansion; if negative, it behaves like compression.</span></p>
+</div>
+<div class="card particlePanel">
+<h3><span data-en="Step-by-step divergence accumulation" data-i18n="1" data-zh="逐步散度累加">Step-by-step divergence accumulation</span></h3>
+<div class="control">
+<button class="btn" id="divPrev"><span data-en="Prev" data-i18n="1" data-zh="上一个">Prev</span></button>
+<button class="btn" id="divNext"><span data-en="Next particle" data-i18n="1" data-zh="下一个粒子">Next particle</span></button>
+<button class="btn" id="divPlay"><span data-en="Play" data-i18n="1" data-zh="播放">Play</span></button>
+<button class="btn" id="divReset"><span data-en="Reset" data-i18n="1" data-zh="重置">Reset</span></button>
+<label class="mini"><span data-en="velocity mode" data-i18n="1" data-zh="速度模式">velocity mode</span></label>
+<select id="divMode"><option value="source"><span data-en="source / expansion" data-i18n="1" data-zh="源流 / 膨胀">source / expansion</span></option><option value="sink"><span data-en="sink / compression" data-i18n="1" data-zh="汇流 / 压缩">sink / compression</span></option><option value="shear"><span data-en="shear-like motion" data-i18n="1" data-zh="类剪切运动">shear-like motion</span></option></select>
+</div>
+<canvas class="particleViz" id="divParticles" style="height:260px"></canvas>
+<div class="accumStats">
+<div class="statBox"><b><span data-en="current particle" data-i18n="1" data-zh="当前粒子">current particle</span></b><span id="divStep"><span data-en="b = --" data-i18n="1" data-zh="b = --">b = --</span></span></div>
+<div class="statBox"><b><span data-en="current scalar" data-i18n="1" data-zh="当前标量">current scalar</span></b><span id="divTerm"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+<div class="statBox"><b><span data-en="partial divergence" data-i18n="1" data-zh="部分散度">partial divergence</span></b><span id="divTotal"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+</div>
+<div class="accumFormula" id="divFormula"><span data-en="Contribution: $(m_b/\rho_b)(\mathbf{v}_b-\mathbf{v}_a)\cdot\nabla_a W_{ab}$" data-i18n="1" data-zh="贡献项：$(m_b/\rho_b)(\mathbf{v}_b-\mathbf{v}_a)\cdot\nabla_a W_{ab}$">Contribution: $(m_b/\rho_b)(\mathbf{v}_b-\mathbf{v}_a)\cdot\nabla_a W_{ab}$</span></div>
+<p class="mini" style="margin-top:8px"><span data-en="Velocity arrows are prescribed for illustration; the displayed number shows how each neighbor changes $\nabla\cdot\mathbf{v}_a$." data-i18n="1" data-zh="速度箭头仅用于示意；显示数值表示每个邻近粒子对 $\nabla\cdot\mathbf{v}_a$ 的影响。">Velocity arrows are prescribed for illustration; the displayed number shows how each neighbor changes $\nabla\cdot\mathbf{v}_a$.</span></p>
+</div>
+</div>
+</section>
+<section class="slide" id="s8">
+<div class="sectionIndex"><span data-en="08 / 12" data-i18n="1" data-zh="08 / 12">08 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Governing Equations" data-i18n="1" data-zh="控制方程">Governing Equations</span></div>
+<h2><span data-en="From accumulated operators to Navier–Stokes terms" data-i18n="1" data-zh="从累加算子到 Navier–Stokes 项">From accumulated operators to Navier–Stokes terms</span></h2>
+<p><span data-en="The same particle-by-particle accumulation is inserted into the Lagrangian Navier–Stokes equations. The continuity equation uses velocity divergence, while the momentum equation uses pressure-gradient and viscous terms." data-i18n="1" data-zh="同样的逐粒子累加过程可代入 Lagrangian 形式的 Navier–Stokes 方程。连续性方程使用速度散度，动量方程使用压力梯度项和黏性项。">The same particle-by-particle accumulation is inserted into the Lagrangian Navier–Stokes equations. The continuity equation uses velocity divergence, while the momentum equation uses pressure-gradient and viscous terms.</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(8)" data-i18n="1" data-zh="(8)">(8)</span></span><span data-en="$$\frac{\mathrm{D}\rho}{\mathrm{D}t}=-\rho\nabla\cdot\mathbf{v},\qquad
+      \frac{\mathrm{D}\mathbf{v}}{\mathrm{D}t}=-\frac{1}{\rho}\nabla p+\nu\nabla^2\mathbf{v}+\mathbf{g}$$" data-i18n="1" data-zh="$$\frac{\mathrm{D}\rho}{\mathrm{D}t}=-\rho\nabla\cdot\mathbf{v},\qquad
+      \frac{\mathrm{D}\mathbf{v}}{\mathrm{D}t}=-\frac{1}{\rho}\nabla p+\nu\nabla^2\mathbf{v}+\mathbf{g}$$">$$\frac{\mathrm{D}\rho}{\mathrm{D}t}=-\rho\nabla\cdot\mathbf{v},\qquad
+      \frac{\mathrm{D}\mathbf{v}}{\mathrm{D}t}=-\frac{1}{\rho}\nabla p+\nu\nabla^2\mathbf{v}+\mathbf{g}$$</span></div>
+<div class="warn"><span data-en="For weakly compressible SPH, density is evolved by continuity, pressure is obtained from an equation of state, and acceleration is then accumulated from pressure, viscosity, and body-force terms." data-i18n="1" data-zh="对于弱可压缩 SPH，密度由连续性方程推进，压力由状态方程得到，加速度则由压力、黏性和体力项累加得到。">For weakly compressible SPH, density is evolved by continuity, pressure is obtained from an equation of state, and acceleration is then accumulated from pressure, viscosity, and body-force terms.</span></div>
+</div>
+<div class="card particlePanel">
+<h3><span data-en="Step-by-step NS term assembly" data-i18n="1" data-zh="逐步组装 NS 项">Step-by-step NS term assembly</span></h3>
+<div class="control">
+<button class="btn" id="nsPrev"><span data-en="Prev" data-i18n="1" data-zh="上一个">Prev</span></button>
+<button class="btn" id="nsNext"><span data-en="Next particle" data-i18n="1" data-zh="下一个粒子">Next particle</span></button>
+<button class="btn" id="nsPlay"><span data-en="Play" data-i18n="1" data-zh="播放">Play</span></button>
+<button class="btn" id="nsReset"><span data-en="Reset" data-i18n="1" data-zh="重置">Reset</span></button>
+<label class="mini"><span data-en="term" data-i18n="1" data-zh="项">term</span></label>
+<select id="nsMode"><option value="continuity"><span data-en="continuity: $D\rho/Dt$" data-i18n="1" data-zh="连续性：$D\rho/Dt$">continuity: $D\rho/Dt$</span></option><option value="pressure"><span data-en="pressure acceleration" data-i18n="1" data-zh="压力加速度">pressure acceleration</span></option></select>
+</div>
+<canvas class="particleViz" id="nsParticles" style="height:260px"></canvas>
+<div class="accumStats">
+<div class="statBox"><b><span data-en="current particle" data-i18n="1" data-zh="当前粒子">current particle</span></b><span id="nsStep"><span data-en="b = --" data-i18n="1" data-zh="b = --">b = --</span></span></div>
+<div class="statBox"><b><span data-en="current term" data-i18n="1" data-zh="当前项">current term</span></b><span id="nsTerm"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+<div class="statBox"><b><span data-en="partial result" data-i18n="1" data-zh="部分结果">partial result</span></b><span id="nsTotal"><span data-en="--" data-i18n="1" data-zh="--">--</span></span></div>
+</div>
+<div class="accumFormula" id="nsFormula"><span data-en="Select continuity or pressure acceleration to see how each neighbor contributes to the governing equations." data-i18n="1" data-zh="选择连续性项或压力加速度项，查看每个邻近粒子如何贡献到控制方程中。">Select continuity or pressure acceleration to see how each neighbor contributes to the governing equations.</span></div>
+<p class="mini" style="margin-top:8px"><span data-en="This panel connects the abstract operators to the actual terms used in the SPH time-marching loop." data-i18n="1" data-zh="该面板将抽象算子与 SPH 时间推进循环中的实际项对应起来。">This panel connects the abstract operators to the actual terms used in the SPH time-marching loop.</span></p>
+</div>
+</div>
+</section>
+<section class="slide" id="s9">
+<div class="sectionIndex"><span data-en="09 / 12" data-i18n="1" data-zh="09 / 12">09 / 12</span></div>
+<div class="wrap grid">
+<div>
+<div class="kicker"><span data-en="Closure" data-i18n="1" data-zh="封闭">Closure</span></div>
+<h2><span data-en="Equation of state for closure" data-i18n="1" data-zh="用于封闭求解的状态方程">Equation of state for closure</span></h2>
+<p><span data-en="In weakly compressible SPH, pressure is not obtained from a Poisson equation. Instead, it is computed from density using an equation of state." data-i18n="1" data-zh="在弱可压缩 SPH 中，压力并不通过 Poisson 方程求解，而是由密度通过状态方程计算得到。">In weakly compressible SPH, pressure is not obtained from a Poisson equation. Instead, it is computed from density using an equation of state.</span></p>
+<div class="formula"><span class="eqnum"><span data-en="(11)" data-i18n="1" data-zh="(11)">(11)</span></span><span data-en="$$\boxed{p=B\left[\left(\frac{\rho}{\rho_0}\right)^\gamma-1\right]},\qquad B=\frac{c_0^2\rho_0}{\gamma}$$" data-i18n="1" data-zh="$$\boxed{p=B\left[\left(\frac{\rho}{\rho_0}\right)^\gamma-1\right]},\qquad B=\frac{c_0^2\rho_0}{\gamma}$$">$$\boxed{p=B\left[\left(\frac{\rho}{\rho_0}\right)^\gamma-1\right]},\qquad B=\frac{c_0^2\rho_0}{\gamma}$$</span></div>
+<p><span data-en="Here, $\rho_0$ is the reference density, $c_0$ is the artificial speed of sound, and $\gamma$ is commonly taken as $7$ for water-like fluids." data-i18n="1" data-zh="其中，$\rho_0$ 为参考密度，$c_0$ 为人工声速，水类流体中 $\gamma$ 通常取 $7$。">Here, $\rho_0$ is the reference density, $c_0$ is the artificial speed of sound, and $\gamma$ is commonly taken as $7$ for water-like fluids.</span></p>
+<p class="note"><span data-en="This closes the equation system: once $\rho$ is evolved from continuity, $p$ can be calculated, and then the momentum equation can update velocity." data-i18n="1" data-zh="这样即可封闭方程组：连续性方程推进得到 $\rho$ 后，可计算 $p$，随后由动量方程更新速度。">This closes the equation system: once $\rho$ is evolved from continuity, $p$ can be calculated, and then the momentum equation can update velocity.</span></p>
+</div>
+<div class="card">
+<h3><span data-en="Closed WCSPH loop" data-i18n="1" data-zh="封闭的 WCSPH 循环">Closed WCSPH loop</span></h3>
+<div class="flow" style="flex-direction:column;align-items:stretch">
+<div class="node"><span data-en="Continuity equation" data-i18n="1" data-zh="连续性方程">Continuity equation</span><br/><span data-en="update $\rho_a$" data-i18n="1" data-zh="更新 $\rho_a$">update $\rho_a$</span></div>
+<div class="arrow" style="transform:rotate(90deg);align-self:center"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Equation of state" data-i18n="1" data-zh="状态方程">Equation of state</span><br/><span data-en="compute $p_a=p(\rho_a)$" data-i18n="1" data-zh="计算 $p_a=p(\rho_a)$">compute $p_a=p(\rho_a)$</span></div>
+<div class="arrow" style="transform:rotate(90deg);align-self:center"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Momentum equation" data-i18n="1" data-zh="动量方程">Momentum equation</span><br/><span data-en="update $\mathbf{v}_a$ and $\mathbf{x}_a$" data-i18n="1" data-zh="更新 $\mathbf{v}_a$ 与 $\mathbf{x}_a$">update $\mathbf{v}_a$ and $\mathbf{x}_a$</span></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="s10">
+<div class="sectionIndex"><span data-en="10 / 12" data-i18n="1" data-zh="10 / 12">10 / 12</span></div>
+<div class="wrap">
+<div class="kicker"><span data-en="SPH Form of NS: Mass and Pressure" data-i18n="1" data-zh="NS 方程的 SPH 形式：质量与压力">SPH Form of NS: Mass and Pressure</span></div>
+<h2><span data-en="SPH discretization of mass and pressure terms" data-i18n="1" data-zh="质量项与压力项的 SPH 离散">SPH discretization of mass and pressure terms</span></h2>
+<div class="grid2">
+<div class="card">
+<h3><span data-en="Density summation" data-i18n="1" data-zh="密度求和">Density summation</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(12)" data-i18n="1" data-zh="(12)">(12)</span></span><span data-en="$$\rho_a=\sum_b m_b W_{ab}$$" data-i18n="1" data-zh="$$\rho_a=\sum_b m_b W_{ab}$$">$$\rho_a=\sum_b m_b W_{ab}$$</span></div>
+<p class="mini"><span data-en="This reconstructs density from the local mass distribution." data-i18n="1" data-zh="该式根据局部质量分布重构密度。">This reconstructs density from the local mass distribution.</span></p>
+</div>
+<div class="card">
+<h3><span data-en="Continuity equation" data-i18n="1" data-zh="连续性方程">Continuity equation</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(13)" data-i18n="1" data-zh="(13)">(13)</span></span><span data-en="$$\frac{\mathrm{D}\rho_a}{\mathrm{D}t}=\sum_b m_b(\mathbf{v}_a-\mathbf{v}_b)\cdot\nabla_a W_{ab}$$" data-i18n="1" data-zh="$$\frac{\mathrm{D}\rho_a}{\mathrm{D}t}=\sum_b m_b(\mathbf{v}_a-\mathbf{v}_b)\cdot\nabla_a W_{ab}$$">$$\frac{\mathrm{D}\rho_a}{\mathrm{D}t}=\sum_b m_b(\mathbf{v}_a-\mathbf{v}_b)\cdot\nabla_a W_{ab}$$</span></div>
+<p class="mini"><span data-en="This form evolves density according to pairwise velocity differences." data-i18n="1" data-zh="该形式根据成对粒子的速度差推进密度。">This form evolves density according to pairwise velocity differences.</span></p>
+</div>
+<div class="card">
+<h3><span data-en="Pressure from EOS" data-i18n="1" data-zh="由 EOS 计算压力">Pressure from EOS</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(14)" data-i18n="1" data-zh="(14)">(14)</span></span><span data-en="$$p_a=\frac{c_0^2\rho_0}{\gamma}\left[\left(\frac{\rho_a}{\rho_0}\right)^\gamma-1\right]$$" data-i18n="1" data-zh="$$p_a=\frac{c_0^2\rho_0}{\gamma}\left[\left(\frac{\rho_a}{\rho_0}\right)^\gamma-1\right]$$">$$p_a=\frac{c_0^2\rho_0}{\gamma}\left[\left(\frac{\rho_a}{\rho_0}\right)^\gamma-1\right]$$</span></div>
+</div>
+<div class="card">
+<h3><span data-en="Pressure-gradient force" data-i18n="1" data-zh="压力梯度力">Pressure-gradient force</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(15)" data-i18n="1" data-zh="(15)">(15)</span></span><span data-en="$$\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_p=-\sum_b m_b\left(\frac{p_a}{\rho_a^2}+\frac{p_b}{\rho_b^2}\right)\nabla_a W_{ab}$$" data-i18n="1" data-zh="$$\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_p=-\sum_b m_b\left(\frac{p_a}{\rho_a^2}+\frac{p_b}{\rho_b^2}\right)\nabla_a W_{ab}$$">$$\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_p=-\sum_b m_b\left(\frac{p_a}{\rho_a^2}+\frac{p_b}{\rho_b^2}\right)\nabla_a W_{ab}$$</span></div>
+<p class="mini"><span data-en="The symmetric form helps preserve pairwise force balance." data-i18n="1" data-zh="这种对称形式有助于保持成对粒子间的力平衡。">The symmetric form helps preserve pairwise force balance.</span></p>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="s11">
+<div class="sectionIndex"><span data-en="11 / 12" data-i18n="1" data-zh="11 / 12">11 / 12</span></div>
+<div class="wrap">
+<div class="kicker"><span data-en="SPH Form of NS: Viscosity and Time Evolution" data-i18n="1" data-zh="NS 方程的 SPH 形式：黏性与时间演化">SPH Form of NS: Viscosity and Time Evolution</span></div>
+<h2><span data-en="SPH discretization of viscous and body-force terms" data-i18n="1" data-zh="黏性项与体力项的 SPH 离散">SPH discretization of viscous and body-force terms</span></h2>
+<div class="grid2">
+<div class="card">
+<h3><span data-en="Viscous diffusion" data-i18n="1" data-zh="黏性扩散">Viscous diffusion</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(16)" data-i18n="1" data-zh="(16)">(16)</span></span><span data-en="$$\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_\nu=\sum_b m_b\frac{4\nu\,\mathbf{r}_{ab}\cdot\nabla_a W_{ab}}{(\rho_a+\rho_b)(r_{ab}^2+\eta^2)}(\mathbf{v}_a-\mathbf{v}_b)$$" data-i18n="1" data-zh="$$\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_\nu=\sum_b m_b\frac{4\nu\,\mathbf{r}_{ab}\cdot\nabla_a W_{ab}}{(\rho_a+\rho_b)(r_{ab}^2+\eta^2)}(\mathbf{v}_a-\mathbf{v}_b)$$">$$\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_\nu=\sum_b m_b\frac{4\nu\,\mathbf{r}_{ab}\cdot\nabla_a W_{ab}}{(\rho_a+\rho_b)(r_{ab}^2+\eta^2)}(\mathbf{v}_a-\mathbf{v}_b)$$</span></div>
+<p class="mini"><span data-en="This is a common laminar-viscosity form. $\eta^2$ is a small regularization term to avoid singularity." data-i18n="1" data-zh="这是常用的层流黏性形式。$\eta^2$ 是用于避免奇异性的微小正则化项。">This is a common laminar-viscosity form. $\eta^2$ is a small regularization term to avoid singularity.</span></p>
+</div>
+<div class="card">
+<h3><span data-en="Complete acceleration" data-i18n="1" data-zh="完整加速度">Complete acceleration</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(17)" data-i18n="1" data-zh="(17)">(17)</span></span><span data-en="$$\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}=\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_p+\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_\nu+\mathbf{g}$$" data-i18n="1" data-zh="$$\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}=\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_p+\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_\nu+\mathbf{g}$$">$$\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}=\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_p+\left(\frac{\mathrm{D}\mathbf{v}_a}{\mathrm{D}t}\right)_\nu+\mathbf{g}$$</span></div>
+</div>
+<div class="card">
+<h3><span data-en="Particle advection" data-i18n="1" data-zh="粒子平流">Particle advection</span></h3>
+<div class="formula small"><span class="eqnum"><span data-en="(18)" data-i18n="1" data-zh="(18)">(18)</span></span><span data-en="$$\frac{\mathrm{D}\mathbf{x}_a}{\mathrm{D}t}=\mathbf{v}_a$$" data-i18n="1" data-zh="$$\frac{\mathrm{D}\mathbf{x}_a}{\mathrm{D}t}=\mathbf{v}_a$$">$$\frac{\mathrm{D}\mathbf{x}_a}{\mathrm{D}t}=\mathbf{v}_a$$</span></div>
+</div>
+<div class="card">
+<h3><span data-en="Definitions" data-i18n="1" data-zh="符号定义">Definitions</span></h3>
+<div class="formula small"><span data-en="$$\mathbf{r}_{ab}=\mathbf{x}_a-\mathbf{x}_b,\qquad r_{ab}=|\mathbf{r}_{ab}|,\qquad \nabla_a W_{ab}=\frac{\partial W(\mathbf{x}_a-\mathbf{x}_b,h)}{\partial \mathbf{x}_a}$$" data-i18n="1" data-zh="$$\mathbf{r}_{ab}=\mathbf{x}_a-\mathbf{x}_b,\qquad r_{ab}=|\mathbf{r}_{ab}|,\qquad \nabla_a W_{ab}=\frac{\partial W(\mathbf{x}_a-\mathbf{x}_b,h)}{\partial \mathbf{x}_a}$$">$$\mathbf{r}_{ab}=\mathbf{x}_a-\mathbf{x}_b,\qquad r_{ab}=|\mathbf{r}_{ab}|,\qquad \nabla_a W_{ab}=\frac{\partial W(\mathbf{x}_a-\mathbf{x}_b,h)}{\partial \mathbf{x}_a}$$</span></div>
+</div>
+</div>
+</div>
+</section>
+<section class="slide" id="s12">
+<div class="sectionIndex"><span data-en="12 / 12" data-i18n="1" data-zh="12 / 12">12 / 12</span></div>
+<div class="wrap">
+<div class="kicker"><span data-en="Take-home Messages" data-i18n="1" data-zh="核心信息">Take-home Messages</span></div>
+<h2><span data-en="The complete conceptual chain" data-i18n="1" data-zh="完整概念链条">The complete conceptual chain</span></h2>
+<div class="flow">
+<div class="node"><span data-en="Dirac delta" data-i18n="1" data-zh="Dirac delta">Dirac delta</span><br/><span data-en="ideal selection" data-i18n="1" data-zh="理想筛选">ideal selection</span></div><div class="arrow"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Kernel $W$" data-i18n="1" data-zh="核函数 $W$">Kernel $W$</span><br/><span data-en="smooth weighting" data-i18n="1" data-zh="光滑加权">smooth weighting</span></div><div class="arrow"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Particle summation" data-i18n="1" data-zh="粒子求和">Particle summation</span><br/><span data-en="SPH operators" data-i18n="1" data-zh="SPH 算子">SPH operators</span></div><div class="arrow"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="Navier–Stokes" data-i18n="1" data-zh="Navier–Stokes">Navier–Stokes</span><br/><span data-en="mass + momentum" data-i18n="1" data-zh="质量 + 动量">mass + momentum</span></div><div class="arrow"><span data-en="→" data-i18n="1" data-zh="→">→</span></div>
+<div class="node"><span data-en="EOS closure" data-i18n="1" data-zh="EOS 封闭">EOS closure</span><br/><span data-en="$p=p(\rho)$" data-i18n="1" data-zh="$p=p(\rho)$">$p=p(\rho)$</span></div>
+</div>
+<div class="twoLine"></div>
+<div class="grid3">
+<div class="card"><h3><span data-en="1. Field reconstruction" data-i18n="1" data-zh="1. 场重构">1. Field reconstruction</span></h3><p><span data-en="SPH reconstructs a continuum field from local kernel-weighted particle information." data-i18n="1" data-zh="SPH 通过局部核函数加权的粒子信息重构连续介质场。">SPH reconstructs a continuum field from local kernel-weighted particle information.</span></p></div>
+<div class="card"><h3><span data-en="2. Operators" data-i18n="1" data-zh="2. 算子">2. Operators</span></h3><p><span data-en="Gradient and divergence operators are obtained by differentiating the kernel, not the noisy particle field directly." data-i18n="1" data-zh="梯度与散度算子通过对核函数求导得到，而不是直接对含噪粒子场求导。">Gradient and divergence operators are obtained by differentiating the kernel, not the noisy particle field directly.</span></p></div>
+<div class="card"><h3><span data-en="3. Fluid solver" data-i18n="1" data-zh="3. 流体求解器">3. Fluid solver</span></h3><p><span data-en="The discretized continuity equation, EOS, and momentum equation form a closed WCSPH time-marching system." data-i18n="1" data-zh="离散后的连续性方程、EOS 与动量方程构成封闭的 WCSPH 时间推进系统。">The discretized continuity equation, EOS, and momentum equation form a closed WCSPH time-marching system.</span></p></div>
+</div>
+<div class="compareBox">
+<div class="card pros">
+<h3><span data-en="SPH Advantages" data-i18n="1" data-zh="SPH 优势">SPH Advantages</span></h3>
+<ul class="bullet">
+<li><b><span data-en="Explicit and highly parallelizable:" data-i18n="1" data-zh="显式且高度可并行：">Explicit and highly parallelizable:</span></b><span data-en="local particle interactions make SPH well suited for large-scale GPU acceleration." data-i18n="1" data-zh="局部粒子相互作用使 SPH 非常适合大规模 GPU 加速。">local particle interactions make SPH well suited for large-scale GPU acceleration.</span></li>
+<li><b><span data-en="No explicit free-surface tracking:" data-i18n="1" data-zh="无需显式自由面捕捉：">No explicit free-surface tracking:</span></b><span data-en="naturally handles breaking waves, splashing, droplets, and violent free-surface deformation." data-i18n="1" data-zh="可自然处理破碎波、飞溅、液滴以及剧烈自由面变形。">naturally handles breaking waves, splashing, droplets, and violent free-surface deformation.</span></li>
+<li><b><span data-en="Mesh-free Lagrangian description:" data-i18n="1" data-zh="无网格 Lagrangian 描述：">Mesh-free Lagrangian description:</span></b><span data-en="suitable for large deformation, large displacement, and strongly nonlinear fluid–structure interaction." data-i18n="1" data-zh="适用于大变形、大位移以及强非线性流固耦合问题。">suitable for large deformation, large displacement, and strongly nonlinear fluid–structure interaction.</span></li>
+</ul>
+</div>
+<div class="card cons">
+<h3><span data-en="SPH Limitations" data-i18n="1" data-zh="SPH 局限">SPH Limitations</span></h3>
+<ul class="bullet">
+<li><b><span data-en="Relatively low consistency:" data-i18n="1" data-zh="一致性相对较低：">Relatively low consistency:</span></b><span data-en="basic SPH approximations are often close to first-order accuracy without correction." data-i18n="1" data-zh="未经修正的基础 SPH 近似通常接近一阶精度。">basic SPH approximations are often close to first-order accuracy without correction.</span></li>
+<li><b><span data-en="Complex boundary treatment:" data-i18n="1" data-zh="边界处理较复杂：">Complex boundary treatment:</span></b><span data-en="solid walls, open boundaries, and pressure boundaries usually require dedicated treatments." data-i18n="1" data-zh="固壁、开边界和压力边界通常需要专门处理。">solid walls, open boundaries, and pressure boundaries usually require dedicated treatments.</span></li>
+<li><b><span data-en="Particle disorder and noise:" data-i18n="1" data-zh="粒子无序与噪声：">Particle disorder and noise:</span></b><span data-en="irregular particle distributions may induce pressure oscillations, numerical noise, and artificial dissipation." data-i18n="1" data-zh="不规则粒子分布可能引发压力振荡、数值噪声和人工耗散。">irregular particle distributions may induce pressure oscillations, numerical noise, and artificial dissipation.</span></li>
+</ul>
+</div>
+</div>
+<div class="formula" style="margin-top:28px"><span class="eqnum"><span data-en="Core idea" data-i18n="1" data-zh="核心思想">Core idea</span></span><span data-en="$$\boxed{\text{SPH} = \text{kernel-weighted field reconstruction} + \text{particle-based Navier--Stokes evolution}}$$" data-i18n="1" data-zh="$$\boxed{\text{SPH} = \text{核函数加权场重构} + \text{基于粒子的 Navier--Stokes 演化}}$$">$$\boxed{\text{SPH} = \text{kernel-weighted field reconstruction} + \text{particle-based Navier--Stokes evolution}}$$</span></div>
+</div>
+</section>
+<script>
+(function(){
+  const dyn = {
+    en: {
+      movingTarget:'moving target particle i', neighborInside:'neighbor inside support: ', xprime:"x'", weight:'weight', target:'x', deltaLabel:"δ(x − x')", zeroEverywhere:'zero everywhere except at the target point', unitArea:"unit area: ∫δ(x−x')dx' = 1",
+      partialPhi:'partial value 〈φ_a〉 = Σ contributions', greenGrad:'green arrow = accumulated ∇φ_a', expansion:'partial result: local expansion', compression:'partial result: local compression', done:'done', allNeighbors:'All neighboring particle contributions have been accumulated.', allVectors:'All vector contributions have been accumulated.', allScalars:'All scalar divergence contributions have been accumulated.',
+      contribution:'Contribution', currentB:'b', phi:'φ_b', wab:'W_ab', deltaPhi:'Δφ', nabla:'∇W_ab', term:'term', continuityTerm:'Continuity term', pressureTerm:'Pressure term', allTerms:'All particle contributions have been assembled.'
+    },
+    zh: {
+      movingTarget:'运动目标粒子 i', neighborInside:'支撑域内邻居数：', xprime:"x'", weight:'权重', target:'x', deltaLabel:"δ(x − x')", zeroEverywhere:'除目标点外处处为零', unitArea:"单位面积：∫δ(x−x')dx' = 1",
+      partialPhi:'部分值 〈φ_a〉 = Σ 贡献项', greenGrad:'绿色箭头 = 已累加的 ∇φ_a', expansion:'部分结果：局部膨胀', compression:'部分结果：局部压缩', done:'完成', allNeighbors:'所有邻近粒子贡献已累加。', allVectors:'所有向量贡献已累加。', allScalars:'所有散度标量贡献已累加。',
+      contribution:'贡献项', currentB:'b', phi:'φ_b', wab:'W_ab', deltaPhi:'Δφ', nabla:'∇W_ab', term:'项', continuityTerm:'连续性项', pressureTerm:'压力项', allTerms:'所有粒子贡献已组装完成。'
+    }
+  };
+  window.__uiText = () => dyn[window.PAGE_LANG || 'en'];
+  function setLang(lang){
+    window.PAGE_LANG = lang;
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.body.classList.toggle('lang-zh', lang === 'zh');
+    document.body.classList.toggle('lang-en', lang === 'en');
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const v = el.getAttribute('data-' + lang);
+      if(v !== null) el.textContent = v;
+    });
+    document.querySelectorAll('[data-lang-btn]').forEach(btn=>btn.classList.toggle('active', btn.getAttribute('data-lang-btn')===lang));
+    localStorage.setItem('sph_page_lang', lang);
+    if(window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+    window.dispatchEvent(new Event('resize'));
+  }
+  window.setPageLang=setLang;
+  window.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('[data-lang-btn]').forEach(btn=>btn.addEventListener('click',()=>setLang(btn.getAttribute('data-lang-btn'))));
+    setLang(localStorage.getItem('sph_page_lang') || 'zh');
+  });
+})();
+</script><script>
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progress.style.width = (scrollY / h * 100) + '%';
+  });
+
+  function particleCanvas(){
+    const c=document.getElementById('particleCanvas'); if(!c) return;
+    const dpr=window.devicePixelRatio||1;
+    const resize=()=>{c.width=c.clientWidth*dpr;c.height=c.clientHeight*dpr;}; resize();
+    const ctx=c.getContext('2d');
+    const rand=(a,b)=>a+Math.random()*(b-a);
+    const particles=Array.from({length:260},(_,i)=>({
+      x:Math.random(), y:Math.random(), r:1.6+Math.random()*2.4,
+      vx:rand(-0.0022,0.0022), vy:rand(-0.0016,0.0016), phase:Math.random()*Math.PI*2,
+      kind:i<90?'crosser':'free'
+    }));
+    let t=0;
+    function resetCrosser(p,W,H,cx,cy,R){
+      const a=Math.random()*Math.PI*2;
+      const d=R*rand(1.12,1.44);
+      p.x=(cx+Math.cos(a)*d)/W; p.y=(cy+Math.sin(a)*d)/H;
+      const speed=rand(0.0018,0.0036);
+      p.vx=-Math.cos(a)*speed; p.vy=-Math.sin(a)*speed;
+      p.phase=Math.random()*Math.PI*2;
+    }
+    function draw(){
+      t+=1;
+      ctx.clearRect(0,0,c.width,c.height); ctx.save(); ctx.scale(dpr,dpr);
+      const W=c.clientWidth,H=c.clientHeight;
+      const baseCx=W*.50, baseCy=H*.53;
+      const cx=baseCx + Math.sin(t*0.010)*W*.105 + Math.sin(t*0.027)*W*.018;
+      const cy=baseCy + Math.cos(t*0.008)*H*.095 + Math.sin(t*0.019)*H*.018;
+      const pcx=baseCx + Math.sin((t-1)*0.010)*W*.105 + Math.sin((t-1)*0.027)*W*.018;
+      const pcy=baseCy + Math.cos((t-1)*0.008)*H*.095 + Math.sin((t-1)*0.019)*H*.018;
+      const supportR=Math.min(W,H)*.34;
+      const grd=ctx.createRadialGradient(cx,cy,8,cx,cy,supportR*1.36);
+      grd.addColorStop(0,'rgba(32,227,255,.20)'); grd.addColorStop(.72,'rgba(32,227,255,.055)'); grd.addColorStop(1,'rgba(32,227,255,0)');
+      ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(cx,cy,supportR*1.36,0,Math.PI*2); ctx.fill();
+
+      ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1;
+      for(let x=36;x<W;x+=42){ctx.beginPath();ctx.moveTo(x,24);ctx.lineTo(x,H-22);ctx.stroke();}
+      for(let y=32;y<H;y+=42){ctx.beginPath();ctx.moveTo(24,y);ctx.lineTo(W-24,y);ctx.stroke();}
+
+      ctx.strokeStyle='rgba(32,227,255,.55)'; ctx.lineWidth=2; ctx.setLineDash([8,7]); ctx.beginPath(); ctx.arc(cx,cy,supportR,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+
+      let insideCount=0;
+      particles.forEach((p,idx)=>{
+        const prevX=p.x*W, prevY=p.y*H;
+        if(p.kind==='crosser'){
+          p.phase+=0.036;
+          p.x+=p.vx + Math.sin(p.phase)*0.00010;
+          p.y+=p.vy + Math.cos(p.phase*0.9)*0.00010;
+        }else{
+          p.phase+=0.018+idx*0.00002;
+          p.x+=p.vx+Math.cos(p.phase)*0.00024;
+          p.y+=p.vy+Math.sin(p.phase*1.15)*0.00020;
+        }
+        if(p.x<-0.08||p.x>1.08||p.y<-0.12||p.y>1.12){
+          if(p.kind==='crosser') resetCrosser(p,W,H,cx,cy,supportR);
+          else {p.x=(p.x+1.08)%1.08; p.y=(p.y+1.12)%1.12;}
+        }
+        const x=p.x*W, y=p.y*H;
+        const dx=x-cx,dy=y-cy,dist=Math.hypot(dx,dy); const near=dist<supportR;
+        const wasNear=Math.hypot(prevX-pcx,prevY-pcy)<supportR;
+        if(near) insideCount++;
+        const boundaryBand=Math.abs(dist-supportR)<18 || near!==wasNear;
+        ctx.fillStyle=near?'rgba(81,255,194,.94)':(boundaryBand?'rgba(255,189,101,.78)':'rgba(138,184,255,.58)');
+        ctx.shadowColor=near?'rgba(81,255,194,.72)':(boundaryBand?'rgba(255,189,101,.55)':'rgba(32,227,255,.25)');
+        ctx.shadowBlur=near?14:(boundaryBand?11:5);
+        ctx.beginPath(); ctx.arc(x,y,p.r,0,Math.PI*2); ctx.fill();
+        if(near && idx%3===0){ctx.shadowBlur=0; ctx.strokeStyle='rgba(81,255,194,.16)'; ctx.lineWidth=.9; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(x,y); ctx.stroke();}
+        if(boundaryBand){ctx.shadowBlur=0; ctx.strokeStyle='rgba(255,189,101,.28)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(prevX,prevY); ctx.lineTo(x,y); ctx.stroke();}
+      });
+
+      ctx.shadowBlur=25; ctx.shadowColor='rgba(255,189,101,.95)'; ctx.fillStyle='rgba(255,189,101,.98)'; ctx.beginPath(); ctx.arc(cx,cy,7.5,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0; ctx.strokeStyle='rgba(255,189,101,.36)'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(pcx,pcy); ctx.lineTo(cx,cy); ctx.stroke();
+      ctx.fillStyle='rgba(232,241,255,.86)'; ctx.font='20px Arial'; ctx.fillText((window.__uiText?window.__uiText().movingTarget:'moving target particle i'),cx+14,cy-12);
+
+      const boxX=Math.min(W-250, Math.max(24, cx+supportR*.44));
+      const boxY=Math.min(H-72, Math.max(24, cy+supportR*.42));
+      ctx.fillStyle='rgba(5,14,30,.62)'; ctx.strokeStyle='rgba(81,255,194,.35)'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.roundRect(boxX,boxY,226,34,12); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='rgba(81,255,194,.88)'; ctx.font='19px Arial'; ctx.fillText((window.__uiText?window.__uiText().neighborInside:'neighbor inside support: ')+insideCount,boxX+14,boxY+22);
+
+      ctx.restore(); requestAnimationFrame(draw);
+    }
+    draw(); window.addEventListener('resize', resize);
+  }
+
+  function deltaPlot(){
+    const c=document.getElementById('deltaPlot'); if(!c) return; const ctx=c.getContext('2d'); const dpr=window.devicePixelRatio||1;
+    function draw(){
+      const W=c.clientWidth,H=c.clientHeight; c.width=W*dpr; c.height=H*dpr; ctx.clearRect(0,0,c.width,c.height); ctx.save(); ctx.scale(dpr,dpr);
+      const L=54,R=26,T=28,B=48; const x0=L+(W-L-R)*.52; const base=H-B; const top=T+10;
+      ctx.strokeStyle='rgba(255,255,255,.08)'; ctx.lineWidth=1;
+      for(let i=0;i<=5;i++){let x=L+i*(W-L-R)/5; ctx.beginPath(); ctx.moveTo(x,T); ctx.lineTo(x,base); ctx.stroke();}
+      ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(L,base); ctx.lineTo(W-R,base); ctx.moveTo(L,T); ctx.lineTo(L,base); ctx.stroke();
+      ctx.fillStyle='rgba(210,230,255,.58)'; ctx.font='12px Arial'; const ui=window.__uiText?window.__uiText():{xprime:"x'",weight:'weight',target:'x'}; ctx.fillText(ui.xprime,W-R-8,base+26); ctx.fillText(ui.weight,L-8,T-8); ctx.fillText(ui.target,x0-4,base+22);
+      ctx.strokeStyle='rgba(32,227,255,.55)'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(L,base); ctx.lineTo(W-R,base); ctx.stroke();
+      const grad=ctx.createLinearGradient(x0,base,x0,top); grad.addColorStop(0,'rgba(32,227,255,0)'); grad.addColorStop(.45,'rgba(32,227,255,.75)'); grad.addColorStop(1,'rgba(32,227,255,1)');
+      ctx.shadowColor='rgba(32,227,255,.9)'; ctx.shadowBlur=18; ctx.strokeStyle=grad; ctx.lineWidth=3.2; ctx.beginPath(); ctx.moveTo(x0,base); ctx.lineTo(x0,top+18); ctx.stroke();
+      ctx.fillStyle='rgba(32,227,255,.98)'; ctx.beginPath(); ctx.moveTo(x0,top); ctx.lineTo(x0-9,top+20); ctx.lineTo(x0+9,top+20); ctx.closePath(); ctx.fill(); ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(255,189,101,.96)'; ctx.font='bold 16px Arial'; ctx.fillText((window.__uiText?window.__uiText().deltaLabel:"δ(x − x')"),x0+14,top+8);
+      ctx.fillStyle='rgba(210,230,255,.70)'; ctx.font='13px Arial'; ctx.fillText((window.__uiText?window.__uiText().zeroEverywhere:'zero everywhere except at the target point'),L+16,base-18);
+      ctx.fillStyle='rgba(81,255,194,.86)'; ctx.fillText((window.__uiText?window.__uiText().unitArea:"unit area: ∫δ(x−x')dx' = 1"),x0+14,top+30);
+      ctx.restore();
+    }
+    draw(); window.addEventListener('resize',draw);
+  }
+
+
+
+  function particleDiscretizationPanels(){
+    const particles = [
+      {x:-0.78,y:-0.54},{x:-0.58,y:0.04},{x:-0.62,y:0.58},{x:-0.34,y:-0.32},{x:-0.18,y:0.36},{x:0.02,y:-0.68},
+      {x:0.18,y:-0.10},{x:0.34,y:0.42},{x:0.52,y:-0.44},{x:0.66,y:0.06},{x:0.84,y:0.54},{x:0.92,y:-0.18},
+      {x:-0.98,y:0.22},{x:1.06,y:0.30},{x:-0.10,y:0.80},{x:0.20,y:-0.92}
+    ].map((p,i)=>({...p,id:i+1,m:1,rho:1}));
+    const state = {kernel:0, grad:0, div:0, ns:0, timers:{}};
+    const R0 = 118;
+    function setupCanvas(c){
+      const dpr=window.devicePixelRatio||1; const W=c.clientWidth,H=c.clientHeight; c.width=W*dpr; c.height=H*dpr; const ctx=c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx,W,H};
+    }
+    function commonFrame(ctx,W,H,R=R0){
+      const cx=W*.50, cy=H*.52, scale=Math.min(W,H)*.34;
+      ctx.clearRect(0,0,W,H); ctx.fillStyle='rgba(2,8,18,.30)'; ctx.fillRect(0,0,W,H);
+      const grd=ctx.createRadialGradient(cx,cy,10,cx,cy,R); grd.addColorStop(0,'rgba(32,227,255,.16)'); grd.addColorStop(1,'rgba(32,227,255,0)');
+      ctx.fillStyle=grd; ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+      ctx.setLineDash([6,7]); ctx.strokeStyle='rgba(32,227,255,.55)'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.strokeStyle='rgba(255,255,255,.075)'; ctx.lineWidth=1; for(let i=-2;i<=2;i++){ctx.beginPath();ctx.moveTo(cx+i*scale*.42,cy-scale*1.05);ctx.lineTo(cx+i*scale*.42,cy+scale*1.05);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-scale*1.1,cy+i*scale*.42);ctx.lineTo(cx+scale*1.1,cy+i*scale*.42);ctx.stroke();}
+      return {cx,cy,scale};
+    }
+    function drawArrow(ctx,x1,y1,x2,y2,color,width=2){
+      const ang=Math.atan2(y2-y1,x2-x1); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(x2-7*Math.cos(ang-.45),y2-7*Math.sin(ang-.45)); ctx.lineTo(x2-7*Math.cos(ang+.45),y2-7*Math.sin(ang+.45)); ctx.closePath(); ctx.fill();
+    }
+    function Wkernel(r,h){ const q=r/(h||1); if(q>=1) return 0; return Math.pow(1-q*q,3); }
+    function dWvec(x,y,h){ const r=Math.hypot(x,y); if(r<=1e-9 || r>=h) return [0,0]; const q=r/h; const dWdr=-6*q*Math.pow(1-q*q,2)/h; return [dWdr*x/r, dWdr*y/r]; }
+    function screenParticle(p,cx,cy,scale){ return {sx:cx+p.x*scale, sy:cy+p.y*scale}; }
+    function included(h){ return particles.map((p,i)=>({p,i,r:Math.hypot(p.x,p.y)*100})).filter(o=>o.r<h).sort((a,b)=>a.r-b.r); }
+    function center(ctx,cx,cy){ ctx.shadowColor='rgba(255,189,101,.9)'; ctx.shadowBlur=15; ctx.fillStyle='rgba(255,189,101,.98)'; ctx.beginPath(); ctx.arc(cx,cy,7,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0; ctx.fillStyle='rgba(255,230,190,.95)'; ctx.font='bold 13px Arial'; ctx.fillText('a',cx+10,cy-10); }
+    function setText(id, txt){ const el=document.getElementById(id); if(el) el.textContent=txt; }
+    function drawParticles(ctx,cx,cy,scale,list,step,currentIndex){
+      const added = new Set(list.slice(0, step).map(o=>o.i));
+      const current = list[step]?.i;
+      particles.forEach((p,i)=>{
+        const {sx,sy}=screenParticle(p,cx,cy,scale); const inside=list.some(o=>o.i===i);
+        let fill='rgba(106,167,255,.38)', rad=4.2, shadow='rgba(106,167,255,.20)', blur=3;
+        if(added.has(i)){fill='rgba(81,255,194,.88)';rad=5.2;shadow='rgba(81,255,194,.55)';blur=10;}
+        if(i===current){fill='rgba(255,189,101,.98)';rad=6.2;shadow='rgba(255,189,101,.85)';blur=14;}
+        ctx.shadowColor=shadow; ctx.shadowBlur=blur; ctx.fillStyle=fill; ctx.beginPath(); ctx.arc(sx,sy,rad,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+        if(inside){ ctx.fillStyle='rgba(232,241,255,.70)'; ctx.font='10px Arial'; ctx.fillText('b'+(i+1),sx+7,sy-7); }
+      });
+    }
+    function drawKernel(){
+      const c=document.getElementById('kernelAccum'); if(!c) return; const h=parseFloat(document.getElementById('kernelH').value); const {ctx,W,H}=setupCanvas(c); const {cx,cy,scale}=commonFrame(ctx,W,H,h); const list=included(h);
+      state.kernel=Math.max(0,Math.min(state.kernel,list.length)); drawParticles(ctx,cx,cy,scale,list,state.kernel); center(ctx,cx,cy);
+      let total=0; for(let k=0;k<state.kernel;k++){ const o=list[k]; const phi=1+0.6*o.p.x+0.25*o.p.y; total += phi*Wkernel(o.r,h); const sp=screenParticle(o.p,cx,cy,scale); ctx.strokeStyle='rgba(81,255,194,.16)'; ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(sp.sx,sp.sy);ctx.stroke(); }
+      const cur=list[state.kernel];
+      if(cur){ const phi=1+0.6*cur.p.x+0.25*cur.p.y; const w=Wkernel(cur.r,h); const term=phi*w; const sp=screenParticle(cur.p,cx,cy,scale); ctx.strokeStyle='rgba(255,189,101,.55)'; ctx.lineWidth=2; ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(sp.sx,sp.sy);ctx.stroke(); setText('kernelStep','b'+(cur.i+1)); setText('kernelTerm',term.toFixed(3)); {const ui=window.__uiText?window.__uiText():{contribution:'contribution'}; document.getElementById('kernelFormula').innerHTML=`b${cur.i+1}: φ_b=${phi.toFixed(2)}, W_ab=${w.toFixed(3)} → ${ui.contribution}=${term.toFixed(3)}`;} }
+      else {setText('kernelStep',window.__uiText?window.__uiText().done:'done'); setText('kernelTerm','0.000'); document.getElementById('kernelFormula').innerHTML=(window.__uiText?window.__uiText().allNeighbors:'All neighboring particle contributions have been accumulated.');}
+      setText('kernelTotal',total.toFixed(3)); ctx.fillStyle='rgba(210,230,255,.72)'; ctx.font='12px Arial'; ctx.fillText((window.__uiText?window.__uiText().partialPhi:'partial value 〈φ_a〉 = Σ contributions'),18,H-18);
+    }
+    function fieldPhi(p){ const s=parseFloat(document.getElementById('gradSlope')?.value || 45)/80; return 1+s*(0.9*p.x+0.25*p.y); }
+    function drawGrad(){
+      const c=document.getElementById('gradParticles'); if(!c) return; const h=R0; const {ctx,W,H}=setupCanvas(c); const {cx,cy,scale}=commonFrame(ctx,W,H,h); const list=included(h); state.grad=Math.max(0,Math.min(state.grad,list.length)); drawParticles(ctx,cx,cy,scale,list,state.grad); center(ctx,cx,cy);
+      let gx=0,gy=0; const phia=fieldPhi({x:0,y:0});
+      for(let k=0;k<state.grad;k++){ const o=list[k]; const [dwX,dwY]=dWvec(o.p.x*100,o.p.y*100,h); const dphi=fieldPhi(o.p)-phia; gx+=dphi*dwX; gy+=dphi*dwY; const sp=screenParticle(o.p,cx,cy,scale); drawArrow(ctx,sp.sx,sp.sy,sp.sx+dwX*dphi*1800,sp.sy+dwY*dphi*1800,'rgba(81,255,194,.35)',1.4); }
+      const cur=list[state.grad];
+      if(cur){ const [dwX,dwY]=dWvec(cur.p.x*100,cur.p.y*100,h); const dphi=fieldPhi(cur.p)-phia; const tx=dphi*dwX, ty=dphi*dwY; const sp=screenParticle(cur.p,cx,cy,scale); drawArrow(ctx,sp.sx,sp.sy,sp.sx+tx*2500,sp.sy+ty*2500,'rgba(255,189,101,.95)',2.5); setText('gradStep','b'+(cur.i+1)); setText('gradTerm',`(${tx.toFixed(3)}, ${ty.toFixed(3)})`); {const ui=window.__uiText?window.__uiText():{term:'term'}; document.getElementById('gradFormula').innerHTML=`b${cur.i+1}: Δφ=${dphi.toFixed(3)}, ∇W_ab=(${dwX.toFixed(3)}, ${dwY.toFixed(3)}) → ${ui.term}=(${tx.toFixed(3)}, ${ty.toFixed(3)})`;} }
+      else {setText('gradStep',window.__uiText?window.__uiText().done:'done'); setText('gradTerm','(0.000, 0.000)'); document.getElementById('gradFormula').innerHTML=(window.__uiText?window.__uiText().allVectors:'All vector contributions have been accumulated.');}
+      setText('gradTotal',`(${gx.toFixed(3)}, ${gy.toFixed(3)})`); drawArrow(ctx,cx,cy,cx+gx*2500,cy+gy*2500,'rgba(81,255,194,.95)',3); ctx.fillStyle='rgba(210,230,255,.72)'; ctx.font='12px Arial'; ctx.fillText((window.__uiText?window.__uiText().greenGrad:'green arrow = accumulated ∇φ_a'),18,H-18);
+    }
+    function velocity(p,mode){
+      if(mode==='source') return [p.x*0.9,p.y*0.9];
+      if(mode==='sink') return [-p.x*0.9,-p.y*0.9];
+      return [p.y*0.9,p.x*0.25];
+    }
+    function drawDiv(){
+      const c=document.getElementById('divParticles'); if(!c) return; const mode=document.getElementById('divMode').value; const h=R0; const {ctx,W,H}=setupCanvas(c); const {cx,cy,scale}=commonFrame(ctx,W,H,h); const list=included(h); state.div=Math.max(0,Math.min(state.div,list.length)); drawParticles(ctx,cx,cy,scale,list,state.div); center(ctx,cx,cy); let total=0; const va=velocity({x:0,y:0},mode);
+      particles.forEach((p,i)=>{ const o=list.find(q=>q.i===i); if(!o) return; const {sx,sy}=screenParticle(p,cx,cy,scale); const [vx,vy]=velocity(p,mode); drawArrow(ctx,sx,sy,sx+vx*22,sy+vy*22,'rgba(32,227,255,.55)',1.5); });
+      for(let k=0;k<state.div;k++){ const o=list[k]; const [dwX,dwY]=dWvec(o.p.x*100,o.p.y*100,h); const vb=velocity(o.p,mode); total+=(vb[0]-va[0])*dwX+(vb[1]-va[1])*dwY; }
+      const cur=list[state.div];
+      if(cur){ const [dwX,dwY]=dWvec(cur.p.x*100,cur.p.y*100,h); const vb=velocity(cur.p,mode); const term=(vb[0]-va[0])*dwX+(vb[1]-va[1])*dwY; const sp=screenParticle(cur.p,cx,cy,scale); drawArrow(ctx,sp.sx,sp.sy,sp.sx+dwX*900,sp.sy+dwY*900,'rgba(255,189,101,.95)',2.5); setText('divStep','b'+(cur.i+1)); setText('divTerm',term.toFixed(3)); document.getElementById('divFormula').innerHTML=`b${cur.i+1}: (v_b−v_a)·∇W_ab = (${(vb[0]-va[0]).toFixed(2)}, ${(vb[1]-va[1]).toFixed(2)})·(${dwX.toFixed(3)}, ${dwY.toFixed(3)}) = ${term.toFixed(3)}`; }
+      else {setText('divStep',window.__uiText?window.__uiText().done:'done'); setText('divTerm','0.000'); document.getElementById('divFormula').innerHTML=(window.__uiText?window.__uiText().allScalars:'All scalar divergence contributions have been accumulated.');}
+      setText('divTotal',total.toFixed(3)); ctx.fillStyle=total>=0?'rgba(81,255,194,.90)':'rgba(155,108,255,.90)'; ctx.font='bold 13px Arial'; {const ui=window.__uiText?window.__uiText():{expansion:'partial result: local expansion',compression:'partial result: local compression'}; ctx.fillText(total>=0?ui.expansion:ui.compression,18,H-18);}
+    }
+    function pressure(p){return 2+0.8*p.x+0.25*p.y;}
+    function drawNS(){
+      const c=document.getElementById('nsParticles'); if(!c) return; const mode=document.getElementById('nsMode').value; const h=R0; const {ctx,W,H}=setupCanvas(c); const {cx,cy,scale}=commonFrame(ctx,W,H,h); const list=included(h); state.ns=Math.max(0,Math.min(state.ns,list.length)); drawParticles(ctx,cx,cy,scale,list,state.ns); center(ctx,cx,cy);
+      let sx=0, sy=0, ss=0; const va=[0,0]; const pa=pressure({x:0,y:0}); const rhoa=1;
+      for(let k=0;k<state.ns;k++){ const o=list[k]; const [dwX,dwY]=dWvec(o.p.x*100,o.p.y*100,h); if(mode==='continuity'){const vb=velocity(o.p,'source'); ss+=(va[0]-vb[0])*dwX+(va[1]-vb[1])*dwY;} else {const pb=pressure(o.p); sx+=-(pa/(rhoa*rhoa)+pb)*dwX; sy+=-(pa/(rhoa*rhoa)+pb)*dwY;} }
+      const cur=list[state.ns];
+      if(cur){ const [dwX,dwY]=dWvec(cur.p.x*100,cur.p.y*100,h); const sp=screenParticle(cur.p,cx,cy,scale); if(mode==='continuity'){ const vb=velocity(cur.p,'source'); const term=(va[0]-vb[0])*dwX+(va[1]-vb[1])*dwY; drawArrow(ctx,sp.sx,sp.sy,sp.sx+dwX*900,sp.sy+dwY*900,'rgba(255,189,101,.95)',2.5); setText('nsTerm',term.toFixed(3)); {const ui=window.__uiText?window.__uiText():{continuityTerm:'Continuity term'}; document.getElementById('nsFormula').innerHTML=`${ui.continuityTerm} b${cur.i+1}: (v_a−v_b)·∇W_ab = ${term.toFixed(3)}`;} } else { const pb=pressure(cur.p); const tx=-(pa+pb)*dwX, ty=-(pa+pb)*dwY; drawArrow(ctx,sp.sx,sp.sy,sp.sx+tx*850,sp.sy+ty*850,'rgba(255,189,101,.95)',2.5); setText('nsTerm',`(${tx.toFixed(3)}, ${ty.toFixed(3)})`); document.getElementById('nsFormula').innerHTML=`Pressure-force term b${cur.i+1}: −m_b(p_a/ρ_a²+p_b/ρ_b²)∇W_ab = (${tx.toFixed(3)}, ${ty.toFixed(3)})`; } setText('nsStep','b'+(cur.i+1)); }
+      else { setText('nsStep',window.__uiText?window.__uiText().done:'done'); setText('nsTerm',mode==='continuity'?'0.000':'(0.000, 0.000)'); document.getElementById('nsFormula').innerHTML='All neighboring contributions have been assembled into the selected NS term.'; }
+      if(mode==='continuity'){ setText('nsTotal',ss.toFixed(3)); ctx.fillStyle='rgba(210,230,255,.72)'; ctx.font='12px Arial'; ctx.fillText('partial Dρ_a/Dt = Σ m_b(v_a−v_b)·∇W_ab',18,H-18); }
+      else { setText('nsTotal',`(${sx.toFixed(3)}, ${sy.toFixed(3)})`); drawArrow(ctx,cx,cy,cx+sx*850,cy+sy*850,'rgba(81,255,194,.95)',3); ctx.fillStyle='rgba(210,230,255,.72)'; ctx.font='12px Arial'; ctx.fillText('green arrow = accumulated pressure acceleration',18,H-18); }
+    }
+    function bind(name, draw){
+      const next=document.getElementById(name+'Next'), prev=document.getElementById(name+'Prev'), reset=document.getElementById(name+'Reset'), play=document.getElementById(name+'Play');
+      const len=()=> name==='kernel'?included(parseFloat(document.getElementById('kernelH').value)).length:included(R0).length;
+      next&&next.addEventListener('click',()=>{state[name]=Math.min(state[name]+1,len()); draw();});
+      prev&&prev.addEventListener('click',()=>{state[name]=Math.max(state[name]-1,0); draw();});
+      reset&&reset.addEventListener('click',()=>{state[name]=0; draw();});
+      play&&play.addEventListener('click',()=>{ clearInterval(state.timers[name]); if(play.textContent==='Play'){play.textContent='Pause'; state.timers[name]=setInterval(()=>{ if(state[name]>=len()){state[name]=0;} else state[name]++; draw(); },650);} else {play.textContent='Play';} });
+    }
+    bind('kernel',drawKernel); bind('grad',drawGrad); bind('div',drawDiv); bind('ns',drawNS);
+    const kh=document.getElementById('kernelH'); if(kh) kh.addEventListener('input',()=>{state.kernel=0; drawKernel();});
+    const gs=document.getElementById('gradSlope'); if(gs) gs.addEventListener('input',()=>{state.grad=0; drawGrad();});
+    const dm=document.getElementById('divMode'); if(dm) dm.addEventListener('change',()=>{state.div=0; drawDiv();});
+    const nm=document.getElementById('nsMode'); if(nm) nm.addEventListener('change',()=>{state.ns=0; drawNS();});
+    window.addEventListener('resize',()=>{drawKernel();drawGrad();drawDiv();drawNS();});
+    drawKernel(); drawGrad(); drawDiv(); drawNS();
+  }
+
+
+  function kernel3D(){
+    const c=document.getElementById('kernel3D'); if(!c) return;
+    const ctx=c.getContext('2d'); const dpr=window.devicePixelRatio||1;
+    const slider=document.getElementById('hSlider'); const hVal=document.getElementById('hVal'); const sel=document.getElementById('kernelType');
+    let rotX=-0.72, rotZ=0.72, dragging=false, lastX=0, lastY=0;
+    function cubic(q){q=Math.abs(q); if(q<1) return 1-1.5*q*q+0.75*q*q*q; if(q<2) return .25*Math.pow(2-q,3); return 0;}
+    function wendland(q){q=Math.abs(q); if(q>=2) return 0; return Math.pow(1-q/2,4)*(2*q+1);}
+    function gaussian(q){q=Math.abs(q); if(q>=3) return 0; return Math.exp(-q*q);}
+    function kval(q){return sel.value==='cubic'?cubic(q):(sel.value==='gaussian'?gaussian(q):wendland(q));}
+    function project(x,y,z,scale,cx,cy){
+      const cz=Math.cos(rotZ), sz=Math.sin(rotZ), cxr=Math.cos(rotX), sxr=Math.sin(rotX);
+      const x1=x*cz-y*sz, y1=x*sz+y*cz; const y2=y1*cxr+z*sxr; const z2=y1*sxr+z*cxr;
+      const persp=1.0/(1+0.18*z2);
+      return {x:cx+x1*scale*persp, y:cy+y2*scale*persp, z:z2};
+    }
+    function draw(){
+      const W=c.clientWidth,H=c.clientHeight; c.width=W*dpr; c.height=H*dpr; ctx.clearRect(0,0,c.width,c.height); ctx.save(); ctx.scale(dpr,dpr);
+      const h=parseFloat(slider.value)/100; hVal.textContent=h.toFixed(2);
+      const cx=W*.52, cy=H*.58, scale=Math.min(W,H)*.20; const maxR=3.05;
+      ctx.fillStyle='rgba(2,8,18,.35)'; ctx.fillRect(0,0,W,H);
+      // support disk/grid on base z=0
+      ctx.strokeStyle='rgba(255,255,255,.10)'; ctx.lineWidth=1;
+      for(let r=.8;r<=3.01;r+=.8){ ctx.beginPath(); for(let t=0;t<=Math.PI*2+.05;t+=.08){const p=project(r*Math.cos(t),r*Math.sin(t),0,scale,cx,cy); if(t===0)ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);} ctx.stroke();}
+      for(let a=0;a<Math.PI;a+=Math.PI/6){const p1=project(-maxR*Math.cos(a),-maxR*Math.sin(a),0,scale,cx,cy);const p2=project(maxR*Math.cos(a),maxR*Math.sin(a),0,scale,cx,cy);ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();}
+      // surface mesh: non-negative z upward
+      const lines=[]; const n=72;
+      for(let dir=0;dir<2;dir++){
+        for(let i=0;i<=n;i+=3){
+          const pts=[];
+          for(let j=0;j<=n;j++){
+            let x=-maxR+2*maxR*(dir?j:i)/n, y=-maxR+2*maxR*(dir?i:j)/n;
+            const r=Math.sqrt(x*x+y*y); const q=r/(h*2.0); // h controls width; q= r/(scaled h)
+            const val=kval(q); const z=val*2.45; // always upward, enhanced peak resolution
+            pts.push(project(x,y,z,scale,cx,cy));
+          }
+          lines.push(pts);
+        }
+      }
+      lines.sort((a,b)=>{let az=a.reduce((s,p)=>s+p.z,0)/a.length;let bz=b.reduce((s,p)=>s+p.z,0)/b.length;return az-bz;});
+      for(const pts of lines){
+        ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+        ctx.strokeStyle='rgba(32,227,255,.34)'; ctx.lineWidth=1.1; ctx.stroke();
+      }
+      // high-resolution peak contours to avoid a visually empty apex
+      for(let rr=0.12; rr<=0.72; rr+=0.12){
+        ctx.beginPath();
+        for(let t=0;t<=Math.PI*2+.05;t+=.045){
+          const q=rr/(h*2.0); const z=kval(q)*2.45;
+          const p=project(rr*Math.cos(t),rr*Math.sin(t),z,scale,cx,cy);
+          if(t===0)ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);
+        }
+        ctx.strokeStyle='rgba(81,255,194,.42)'; ctx.lineWidth=1.05; ctx.stroke();
+      }
+      // vertical central peak axis
+      const p0=project(0,0,0,scale,cx,cy), pTop=project(0,0,2.45,scale,cx,cy);
+      ctx.shadowColor='rgba(81,255,194,.8)'; ctx.shadowBlur=14; ctx.strokeStyle='rgba(81,255,194,.92)'; ctx.lineWidth=2.2; ctx.beginPath(); ctx.moveTo(p0.x,p0.y); ctx.lineTo(pTop.x,pTop.y); ctx.stroke(); ctx.shadowBlur=0;
+      ctx.fillStyle='rgba(232,241,255,.82)'; ctx.font='13px Arial'; ctx.fillText('W(r,h) ≥ 0',pTop.x+10,pTop.y+4); ctx.fillStyle='rgba(255,189,101,.88)'; ctx.fillText('target particle',p0.x+10,p0.y+16);
+      ctx.fillStyle='rgba(210,230,255,.62)'; ctx.font='12px Arial'; ctx.fillText('drag to rotate',18,H-18); ctx.fillText('larger h → wider support, lower peak',W-220,H-18);
+      ctx.restore();
+    }
+    slider.addEventListener('input',draw); sel.addEventListener('change',draw); window.addEventListener('resize',draw);
+    c.addEventListener('mousedown',e=>{dragging=true; lastX=e.clientX; lastY=e.clientY; c.style.cursor='grabbing';});
+    window.addEventListener('mouseup',()=>{dragging=false; c.style.cursor='grab';});
+    window.addEventListener('mousemove',e=>{if(!dragging)return; rotZ+=(e.clientX-lastX)*0.008; rotX+=(e.clientY-lastY)*0.008; rotX=Math.max(-1.35,Math.min(-0.15,rotX)); lastX=e.clientX; lastY=e.clientY; draw();});
+    c.addEventListener('touchstart',e=>{dragging=true; lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;},{passive:true});
+    c.addEventListener('touchend',()=>{dragging=false;},{passive:true});
+    c.addEventListener('touchmove',e=>{if(!dragging)return; rotZ+=(e.touches[0].clientX-lastX)*0.008; rotX+=(e.touches[0].clientY-lastY)*0.008; rotX=Math.max(-1.35,Math.min(-0.15,rotX)); lastX=e.touches[0].clientX; lastY=e.touches[0].clientY; draw();},{passive:true});
+    draw();
+  }
+
+  particleCanvas(); deltaPlot(); particleDiscretizationPanels(); kernel3D();
+</script>
+</body>
+</html>
