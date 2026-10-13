@@ -6,7 +6,18 @@
         {%- if site.enable_publication_thumbnails -%}
         <div class="col-sm-5 {% if entry.preview %}preview{% else %}abbr{% endif %}">
         {%- if entry.preview -%}
-          {% if entry.preview contains '://' -%}
+          {%- assign preview_extension = entry.preview | split: '.' | last | downcase -%}
+          {% if preview_extension == 'mp4' or preview_extension == 'webm' or preview_extension == 'ogg' -%}
+            {%- if entry.preview contains '://' -%}
+              {%- assign preview_video_path = entry.preview -%}
+            {%- else -%}
+              {%- assign preview_video_path = entry.preview | prepend: '/assets/video/' | relative_url -%}
+            {%- endif -%}
+          <video class="preview z-depth-1 rounded" autoplay loop muted playsinline preload="metadata" aria-label="Animation preview for {{ entry.title | strip_html | escape }}">
+            <source src="{{ preview_video_path }}" type="video/{{ preview_extension }}">
+            Your browser does not support embedded video.
+          </video>
+          {% elsif entry.preview contains '://' -%}
           <img class="preview z-depth-1 rounded" src="{{ entry.preview }}">
           {%- else -%}
             {%- assign entry_path = entry.preview | prepend: '/assets/img/publication_preview/' -%}

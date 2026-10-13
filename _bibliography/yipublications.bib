@@ -213,6 +213,23 @@
   file = {/Users/abc/Zotero/storage/6SK5VBVB/Song 等 - 2026 - Hybrid Offshore Wind and Wave Energy Systems A Review.pdf}
 }
 
+@article{suDevelopmentSmoothedParticle2024,
+  title = {Development of a Smoothed Particle Hydrodynamics Model for Porous Media Flows with Enhanced Volume Conservation and the Revisit of the Mass Conservation Equation},
+  author = {Su, X.J. and Wang, Chen and Luo, Min and Zhan, Yi},
+  year = 2024,
+  month = oct,
+  journal = {Physics of Fluids},
+  volume = {36},
+  number = {10},
+  pages = {103116},
+  issn = {1070-6631, 1089-7666},
+  doi = {10.1063/5.0231042},
+  urldate = {2025-02-18},
+  abstract = {Porous media exist extensively in hydraulic and coastal engineering structures, while the modeling of wave/flow interaction with porous media remains challenging. This work develops a smoothed particle hydrodynamics (SPH) model for accurately simulating wave/flow interaction with porous media. The mass and momentum conservation equations incorporating the mixture theory are adopted. The resistant forces of the solid skeleton of porous media on fluid flows are described by the nonlinear empirical formula. The research contributions of the work lie in two aspects. First, two categories of mass conservation equations for porous media flow are revisited and analyzed to examine the influences of the local time derivative term of fluid volume fraction on simulation results. Second, the Volume Conservation Shifting scheme is, for the first time, introduced into SPH to enhance volume conservation for simulating porous media flows. The developed SPH model is validated by an analytical case of seepage flows in a U-tube with porous media and then applied to study four benchmark examples involving both saturated and unsaturated porous media, i.e., dam-break flow through a crushed stone dam, rapid seepage flow through a rockfill dam, solitary wave propagation over a porous seabed, and solitary wave propagation over a submerged porous breakwater. The morphological features and dynamic pressure heads of the porous media flows have been satisfactorily predicted, demonstrating the good accuracy and enhanced volume conservation of the developed SPH model.},
+  langid = {english},
+  file = {/Users/abc/Zotero/storage/IEIE3BST/Su et al. - 2024 - Development of a smoothed particle hydrodynamics m.pdf}
+}
+
 @article{tagliafierroWavePowerExtraction,
   title = {Wave {{Power Extraction From Semi-Submersible Hybrid Platforms With Multi-Physics}} and {{High-Fidelity Simulations Powered}} by {{SPH}}},
   author = {Tagliafierro, Bonaventura and {Martinez-Estevez}, Ivan and Capasso, Salvatore and Dominguez, Jose M and Karimirad, Madjid and Viccione, Giacomo and {Gomez-Gesteira}, Moncho and Crespo, Alejandro J C and Goteman, Malin},
@@ -253,22 +270,20 @@
   file = {/Users/abc/Zotero/storage/5GXRASR6/Yi 等 - 2024 - Hydrodynamic performance investigation of the floating wind turbine and point-absorber array hybrid.pdf}
 }
 
-@misc{zhanCouplingSmoothedParticle2026,
-  title = {Coupling {{Smoothed Particle Hydrodynamics}} with {{Multi-Agent Deep Reinforcement Learning}} for {{Cooperative Control}} of {{Point Absorbers}}},
-  author = {Zhan, Yi and {Mart{\'i}nez-Est{\'e}vez}, Iv{\'a}n and Luo, Min and Crespo, Alejandro J. C. and Khayyer, Abbas},
+@article{zhanCouplingSmoothedParticle2026a,
+  title = {Coupling {{Smoothed Particle Hydrodynamics}} with Multi-Agent Deep Reinforcement Learning for Cooperative Control of Point Absorbers},
+  author = {Zhan, Yi and {Mart{\'i}nez-Est{\'e}vez}, Iv{\'a}n and Luo, Min and Crespo, Alejandro J.C. and Khayyer, Abbas},
   year = 2026,
-  month = jan,
-  number = {arXiv:2601.06485},
-  eprint = {2601.06485},
-  primaryclass = {eess},
-  publisher = {arXiv},
-  doi = {10.48550/arXiv.2601.06485},
-  urldate = {2026-01-13},
-  abstract = {Wave Energy Converters, particularly point absorbers, have emerged as one of the most promising technologies for harvesting ocean wave energy. Nevertheless, achieving high conversion efficiency remains challenging due to the inherently complex and nonlinear interactions between incident waves and device motion dynamics. This study develops an optimal adaptive damping control model for the power take-off (PTO) system by coupling Smoothed Particle Hydrodynamics (SPH) with multi-agent deep reinforcement learning. The proposed framework enables real-time communication between high-fidelity SPH simulations and intelligent control agents that learn coordinated policies to maximise energy capture. In each training episode, the SPH-based environment provides instantaneous hydrodynamic states to the agents, which output continuous damping actions and receive rewards reflecting power absorption. The Multi-Agent Soft Actor Critic algorithm is employed within a centralised-training and decentralised-execution scheme to ensure stable learning in continuous, multi-body systems. The entire platform is implemented in a unified GPU-accelerated C++ environment, allowing long-horizon training and large-scale three-dimensional simulations. The approach is validated through a series of two-dimensional and three-dimensional benchmark cases under regular and irregular wave conditions. Compared with constant PTO damping, the learned control policy increases overall energy capture by 23.8\% and 21.5\%, respectively, demonstrating the strong potential of intelligent control for improving the performance of wave energy converter arrays. The developed three-dimensional GPUaccelerated multi-agent platform in computational hydrodynamics, is extendable to other fluid--structure interaction engineering problem that require real-time, multi-body coordinated control.},
-  archiveprefix = {arXiv},
+  month = oct,
+  journal = {Engineering Applications of Artificial Intelligence},
+  volume = {181},
+  pages = {115417},
+  issn = {09521976},
+  doi = {10.1016/j.engappai.2026.115417},
+  urldate = {2026-06-29},
+  abstract = {Wave Energy Converters, particularly point absorbers, have emerged as one of the most promising technologies for harvesting ocean wave energy. Nevertheless, achieving high conversion efficiency remains challenging due to the inherently complex and nonlinear interactions between incident waves and device motion dynamics. This study develops an optimal adaptive damping control model for the power take-off (PTO) system by coupling Smoothed Particle Hydrodynamics (SPH) with multi-agent deep reinforcement learning. The proposed framework enables real-time communication between high-fidelity SPH simulations and intelligent control agents that learn coordinated policies to maximise energy capture. In each training episode, the SPH-based environment provides instantaneous hydrodynamic states to the agents, which output continuous damping actions and receive rewards reflecting power absorption. The Multi-Agent Soft Actor Critic algorithm is employed within a centralised-training and decentralised-execution scheme to ensure stable learning in continuous, multibody systems. The entire platform is implemented in a unified C++ environment accelerated by Graphics Processing Units (GPU), allowing long-horizon training and large-scale three-dimensional simulations. The approach is validated through a series of two-dimensional and three-dimensional benchmark cases under regular and irregular wave conditions. Compared with constant PTO damping, the learned control policy increases overall energy capture by 23.8\% and 21.5\%, respectively, demonstrating the strong potential of intelligent control for improving the performance of wave energy converter arrays. The developed threedimensional GPU-accelerated multi-agent platform in computational hydrodynamics, is extendable to other fluid--structure interaction engineering problems that require real-time, multi-body coordinated control.},
   langid = {english},
-  keywords = {Electrical Engineering and Systems Science - Systems and Control},
-  file = {/Users/abc/Zotero/storage/3LHADCS8/Manuscript-r1 with changes marked.pdf;/Users/abc/Zotero/storage/EYB67QES/Zhan et al. - 2026 - Coupling Smoothed Particle Hydrodynamics with Multi-Agent Deep Reinforcement Learning for Cooperativ.pdf;/Users/abc/Zotero/storage/HH4LJLV2/Manuscript.docx}
+  file = {/Users/abc/Zotero/storage/3LHADCS8/Manuscript-r1 with changes marked.pdf;/Users/abc/Zotero/storage/EYB67QES/Zhan et al. - 2026 - Coupling Smoothed Particle Hydrodynamics with Multi-Agent Deep Reinforcement Learning for Cooperativ.pdf;/Users/abc/Zotero/storage/HH4LJLV2/Manuscript.docx;/Users/abc/Zotero/storage/XS2CI26J/Zhan 等 - 2026 - Coupling Smoothed Particle Hydrodynamics with multi-agent deep reinforcement learning for cooperativ.pdf}
 }
 
 @article{zhanDualSPHysicsEnhancedDualSPHysics2025,
@@ -302,7 +317,7 @@
 }
 
 @article{zhanEnhancedSPHbasedHydroelastic2025,
-  title = {An Enhanced {{SPH-based}} Hydroelastic {{FSI}} Solver with Structural Dynamic Hourglass Control},
+  title = {An Enhanced {{SPH}}-Based Hydroelastic {{FSI}} Solver with Structural Dynamic Hourglass Control},
   author = {Zhan, Yi and Luo, Min and Khayyer, Abbas},
   year = 2025,
   month = jun,
@@ -387,5 +402,5 @@
 
 @phdthesis{zotero-item-3591,
   title = {{{PHD Thesis}}},
-  file = {/Users/abc/Zotero/storage/XTGGYULM/All0611.docx}
+  file = {/Users/abc/Zotero/storage/32KI8X6Y/Thesis_YiZhan.docx;/Users/abc/Zotero/storage/LGHUSXZD/毕业论文-归档版.pdf;/Users/abc/Zotero/storage/Y22GAPS2/Thesis_YiZhan.pdf}
 }
