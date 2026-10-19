@@ -19,7 +19,10 @@ layout: default
         <h1 class="post-title">
           {{site.first_name}} {{ site.middle_name }} {{site.last_name}}
         </h1>
-        <p class="desc">{{ page.subtitle }}</p>
+        <div class="desc">
+          <div class="lang-en" lang="en">{{ page.subtitle }}</div>
+          <div class="lang-zh" lang="zh-CN">{{ page.subtitle_zh | default: page.subtitle }}</div>
+        </div>
       </div>
     </div>
   </header>
@@ -39,12 +42,19 @@ layout: default
           <div class="dot"></div>
         </div>
         <div class="description col-sm-9">
-          <h3>{{ entry.title }}</h3>
+          <h3>
+            <span class="lang-en" lang="en">{{ entry.title }}</span>
+            <span class="lang-zh" lang="zh-CN">{{ entry.title_zh | default: entry.title }}</span>
+          </h3>
           {%- if entry.subtitle -%}
-          <h5>{{ entry.subtitle }}</h5>
+          <h5>
+            <span class="lang-en" lang="en">{{ entry.subtitle }}</span>
+            <span class="lang-zh" lang="zh-CN">{{ entry.subtitle_zh | default: entry.subtitle }}</span>
+          </h5>
           {%- endif -%}
           {%- if entry.description -%}
-          <p>{{ entry.description }}</p>
+          <p class="lang-en" lang="en">{{ entry.description }}</p>
+          <p class="lang-zh" lang="zh-CN">{{ entry.description_zh | default: entry.description }}</p>
           {%- endif -%}
         </div>
         {%- assign entry_image_path = entry.image | prepend: 'assets/img/' -%}
@@ -64,7 +74,7 @@ layout: default
     <hr />
     <h2>
       <a href="{{ '/publications/' | relative_url }}" style="color: inherit"
-        >Selected publications</a
+        ><span class="lang-en" lang="en">Selected publications</span><span class="lang-zh" lang="zh-CN">代表性论文</span></a
       >
     </h2>
     {%- include selected_papers.html %} {%- endif %}

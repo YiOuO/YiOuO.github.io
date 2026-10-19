@@ -34,3 +34,62 @@
   margin: 0;
   padding: 0;
 }
+
+/* English / Chinese language switch */
+.lang-zh {
+  display: none;
+}
+
+html[data-lang="zh-CN"] {
+  .lang-en {
+    display: none !important;
+  }
+
+  .lang-zh {
+    display: revert;
+  }
+}
+
+.language-switch-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 0.5rem;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+  color: var(--global-text-color-light);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.language-option {
+  border: 0;
+  padding: 0.2rem 0.1rem;
+  color: var(--global-text-color-light);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  transition: color 0.2s ease;
+}
+
+.language-option:hover,
+.language-option:focus-visible,
+.language-option[aria-pressed="true"] {
+  color: var(--global-theme-color);
+}
+
+.language-option:focus-visible {
+  border-radius: 0.2rem;
+  outline: 2px solid var(--global-theme-color);
+  outline-offset: 2px;
+}
+
+@media (max-width: 575.98px) {
+  .language-switch-container {
+    padding: 0.4rem 0;
+  }
+}

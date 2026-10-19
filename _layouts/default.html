@@ -1,8 +1,17 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang }}">
+<html lang="{{ site.lang }}" data-lang="en">
 
   <!-- Head -->
   <head>
+  <script>
+    try {
+      var preferredLanguage = localStorage.getItem('preferred-language');
+      if (preferredLanguage === 'zh-CN') {
+        document.documentElement.dataset.lang = 'zh-CN';
+        document.documentElement.lang = 'zh-CN';
+      }
+    } catch (error) {}
+  </script>
   {%- if page.redirect -%}
     <meta http-equiv="refresh" content="3; url={{ site.baseurl }}/" />
   {%- endif -%}
