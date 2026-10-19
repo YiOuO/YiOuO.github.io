@@ -43,7 +43,10 @@ module Jekyll
         end
 
         def bust_css_cache(file_name)
-            CacheDigester.new(file_name: file_name, directory: 'assets/_sass').digest!
+            # Sass partials live in the repository-level `_sass` directory.
+            # Hashing the old `assets/_sass` path produced the MD5 of an empty
+            # directory, so every CSS release reused the same cache key.
+            CacheDigester.new(file_name: file_name, directory: '_sass').digest!
         end
     end
 end
