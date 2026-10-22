@@ -15,7 +15,7 @@ subtitle_zh: >
   </h4>
 
 profile:
-  image: profile.jpg
+  image: photoYi.png
 
 timeline:
   - 
